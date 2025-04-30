@@ -29,9 +29,9 @@ RSpec.describe 'API Remédios', type: :request do
         properties: {
           substance: { type: :string },
           dosage: { type: :float },
-          unit: { type: :integer, enum: [0, 1, 2] }
+          unit: { type: :integer, enum: [ 0, 1, 2 ] }
         },
-        required: ['substance', 'dosage', 'unit']
+        required: [ 'substance', 'dosage', 'unit' ]
       }
 
       response '201', 'remédio cadastrado' do

@@ -3,7 +3,7 @@ FactoryBot.define do
     name { Faker::Internet.username }
     email { Faker::Internet.email }
     password { Faker::Internet.password }
-    
+
     trait :patient do
       role { 'patient' }
     end

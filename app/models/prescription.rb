@@ -4,5 +4,5 @@ class Prescription < ApplicationRecord
   belongs_to :medication
   validates :quantity, :time, :action_type, presence: true
 
-  enum :action_type, add: 1, sub: 2, remove:10
+  enum :action_type, new: 0, add: 1, sub: 2, remove: 10
 end

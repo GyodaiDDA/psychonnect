@@ -30,11 +30,11 @@ RSpec.describe 'API Receitas', type: :request do
           user_id: { type: :integer },
           medication_id: { type: :integer },
           quantity: { type: :float },
-          action_type: { type: :integer, enum: [1, 2, 10] },
+          action_type: { type: :integer, enum: [ 1, 2, 10 ] },
           time: { type: :string },
           comment: { type: :text }
         },
-        required: ['user_id', 'medication_id', 'quantity', 'action_type', 'time']
+        required: [ 'user_id', 'medication_id', 'quantity', 'action_type', 'time' ]
       }
 
       response '201', 'Receita cadastrada' do

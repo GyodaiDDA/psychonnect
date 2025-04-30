@@ -34,9 +34,9 @@ RSpec.describe 'API Users', type: :request do
           name: { type: :string },
           email: { type: :string, format: :email },
           password: { type: :string, format: :password },
-          role: { type: :integer, enum: [0, 1, 10] }
+          role: { type: :integer, enum: [ 0, 1, 10 ] }
         },
-        required: ['name', 'email', 'password', 'role']
+        required: [ 'name', 'email', 'password', 'role' ]
       }
 
       response '201', 'usuário criado' do

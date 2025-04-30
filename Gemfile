@@ -35,14 +35,14 @@ group :development, :test do
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
-  
+
   # Loads enviroment variables
   gem "dotenv"
 
   # FactoryBot and Faker help creating objects for testing
   gem "factory_bot_rails"
   gem "faker", "~> 3.5"
-  
+
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
