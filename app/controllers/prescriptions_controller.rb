@@ -1,6 +1,8 @@
 class PrescriptionsController < ApplicationController
+  before_action :authorize!
+
   def index
-    render json: Prescription:all
+    render json: Prescription.all
   end
 
   def show
@@ -35,6 +37,6 @@ class PrescriptionsController < ApplicationController
   private
 
   def prescription_params
-    params.require(:prescription).permit(:user, :medication, :action_type, :quantity, :time)
+    params.require(:prescription).permit(:user_id, :medication_id, :action_type, :quantity, :time)
   end
 end

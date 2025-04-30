@@ -12,6 +12,10 @@ gem "puma", ">= 5.0"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
+# Encryptation and access tokens
+gem "bcrypt", "~> 3.1"
+gem "jwt", "~> 2.10"
+
 # Use the database-backed adapters for Rails.cache and Active Job
 gem "solid_cache"
 gem "solid_queue"
@@ -31,14 +35,20 @@ group :development, :test do
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
+  
+  # Loads enviroment variables
+  gem "dotenv"
 
+  # FactoryBot and Faker help creating objects for testing
+  gem "factory_bot_rails"
+  gem "faker", "~> 3.5"
+  
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
 
-  # Loads enviroment variables
-  gem "dotenv"
+  # rspec for automated testing
+  gem "rspec-rails"
+
+  # rswag for testing
+  gem "rswag"
 end
-
-gem "bcrypt", "~> 3.1"
-
-gem "jwt", "~> 2.10"

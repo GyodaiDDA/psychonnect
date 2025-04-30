@@ -1,12 +1,18 @@
 Rails.application.routes.draw do
+  mount Rswag::Ui::Engine => '/api-docs'
+  mount Rswag::Api::Engine => '/api-docs'
+  # Defines the root path route ("/")
+  root to: "home#index"
+
   # Endpoints using resources
   resources :users
   resources :medications
   resources :prescriptions
-  
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  get "up" => "rails/health#show", as: :rails_health_check
 
-  # Defines the root path route ("/")
-  root to: "home#index"
+  # All get method routes
+  get "up" => "rails/health#show", as: :rails_health_check
+  get "/secret", to: "secret#index"
+
+  # All post method routes
+  post "/login", to: "auth#login"
 end

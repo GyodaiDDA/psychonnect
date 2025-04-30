@@ -1,6 +1,8 @@
 class UsersController < ApplicationController
+  before_action :authorize_admin!, only: [:index]
+
   def index
-    render json: User:all
+    render json: User.all
   end
 
   def show
@@ -35,6 +37,6 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:name, :email, :role)
+    params.require(:user).permit(:name, :email, :password, :role)
   end
 end

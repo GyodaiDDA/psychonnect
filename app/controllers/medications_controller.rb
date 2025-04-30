@@ -1,6 +1,8 @@
 class MedicationsController < ApplicationController
+  before_action :authorize!
+
   def index
-    render json: Medication:all
+    render json: Medication.all
   end
 
   def show
