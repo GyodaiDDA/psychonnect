@@ -11,12 +11,8 @@ class PrescriptionsController < ApplicationController
   end
 
   def create
-    prescription = Prescription.new(prescription_params)
-    if prescription.save
-      render json: prescription, status: :created
-    else
-      render json: prescription.errors, status: :unprocessable_entity
-    end
+    prescription = PrescriptionProcessor.call(prescription_params, current_user)
+    render json: { message: prescription[:message] }, status: prescription[:status]
   end
 
   def update

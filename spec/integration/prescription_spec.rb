@@ -6,7 +6,7 @@ RSpec.describe 'API Receitas', type: :request do
       tags 'Receitas'
       produces 'application/json'
       response '200', 'receitas listadas' do
-        let!(:prescriptions) { 5.times { create(:prescription, :add) } }
+        let!(:prescriptions) { 5.times { create(:prescription) } }
         let(:user) { create(:user, :patient) }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
         run_test! do |response|
@@ -27,29 +27,49 @@ RSpec.describe 'API Receitas', type: :request do
       parameter name: :prescription, in: :body, schema: {
         type: :object,
         properties: {
-          user_id: { type: :integer },
+          current_user_id: { type: :integer },
+          patient_id: { type: :integer },
+          physician_id: { tyṕe: :integer },
           medication_id: { type: :integer },
           quantity: { type: :float },
-          action_type: { type: :integer, enum: [ 1, 2, 10 ] },
+          action_type: { type: :integer, enum: [ 0, 2, 4, 6, 8, 10 ] },
           time: { type: :string },
           comment: { type: :text }
         },
-        required: [ 'user_id', 'medication_id', 'quantity', 'action_type', 'time' ]
+        required: [ 'patient_id', 'physician_id', 'medication_id', 'quantity', 'time' ]
       }
 
       response '201', 'Receita cadastrada' do
-        let!(:user) { create(:user, :patient) }
+        let!(:patient) { create(:user, :patient) }
+        let!(:physician) { create(:user, :physician) }
         let!(:medication) { create(:medication) }
-        let!(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
-        let!(:prescription) { { prescription: { user_id: user.id, medication_id: medication.id, quantity: '3', time: '14:00', action_type: 1 } } }
+        let!(:Authorization) { "Bearer #{JWT.encode({ user_id: patient.id }, Rails.application.secret_key_base)}" }
+        let!(:prescription) { {
+          prescription: {
+            current_user_id: patient.id,
+            physician_id: physician.id,
+            patient_id: patient.id,
+            medication_id: medication.id,
+            quantity: '3',
+            time: '14:00'}
+        } }
         run_test!
       end
 
       response '422', 'Receita sem quantidade não criada' do
-        let(:user) { create(:user, :patient) }
-        let(:medication) { create(:medication) }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
-        let!(:prescription) { { prescription: { user_id: user.id, medication_id: medication.id, quantity: '', time: '14:00', action_type: 1 } } }
+        let!(:patient) { create(:user, :patient) }
+        let!(:physician) { create(:user, :physician) }
+        let!(:medication) { create(:medication) }
+        let!(:Authorization) { "Bearer #{JWT.encode({ user_id: patient.id }, Rails.application.secret_key_base)}" }
+        let!(:prescription) { {
+          prescription: {
+            current_user_id: patient.id,
+            physician_id: physician.id,
+            patient_id: patient.id,
+            medication_id: medication.id,
+            quantity: '',
+            time: '14:00'}
+        } }
         run_test!
       end
     end

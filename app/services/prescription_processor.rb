@@ -5,95 +5,47 @@ class PrescriptionProcessor
   end
 
   def initialize(params, current_user)
-    @params = params
-    @physician_id = params[:physician_id]  # médico
-    @patient_id = params[:patient_id]  # paciente
+    @physician = User.find_by(id: params[:physician_id])
+    @patient = User.find_by(id: params[:patient_id])
     @current_user = current_user
-    @medication_id = params[:medication_id]
+    @medication = Medication.find_by(id: params[:medication_id])
     @quantity = params[:quantity].to_i
     @time = params[:time]
   end
 
   def process
-    # Confere se a medicação existe
-    medication = Medication.find_by(id: @medication_id)
-    return error("Medicação não encontrada.") unless medication
+    return error("Medicação não encontrada.") unless @medication
+    return error("Paciente não encontrado.") unless @patient
+    return error("Médico não encontrado.") unless @physician
+    return error("Usuário não autorizado.") unless @current_user.in?([@physician, @patient])
 
-    # Confere o paciente
-    patient = User.find_by(id: @patient_id)
-    return error("Paciente não encontrado.") unless patient
+    current_treatment = TreatmentAnalyzer.current_treatment_for(@patient, medication: @medication)
+    current_qty_at_time = TreatmentAnalyzer.current_treatment_for(@patient, medication: @medication, time: @time).pluck(:quantity).first
 
-    # Confere o médico
-    physician = User.find_by(id: @physician_id)
-    return error("Médico não encontrado.") unless physician
+    result =
+      if current_treatment.empty?
+        [:new_medication, "#{@medication.substance} foi adicionado ao tratamento."]
+      #elsif current_qty_at_time.nil?
+      #  [:new_time, "Dose de #{@medication.substance} às #{@time} acrescentada ao horário #{@time}"]
+      else
+        action_type(@quantity, current_qty_at_time)
+      end
 
-    # Confere quem é o usuário atual
-    return error("Usuário não autorizado.") unless current_user.in?([ physician, patient ])
-
-    # Busca pela medicação no tratamento do paciente
-    existing_prescriptions = Prescription.where(patient: patient, medication: medication)
-
-    if existing_prescriptions.empty?
-      # Primeira receita dessa medicação
-      presc = Prescription.create!(
-        patient: patient,
-        physician: physician,
-        current_user: @current_user,
-        medication: medication,
+    begin
+      Prescription.create!(
+        patient: @patient,
+        physician: @physician,
+        current_user_id: @current_user.id,
+        medication: @medication,
         quantity: @quantity,
         time: @time,
-        action_type: 0
+        action_type: result[0]
       )
-      return success("#{medication.substance} foi adicionado ao tratamento.")
-    end
-
-    # Soma atual por horário
-    current_doses = existing_prescriptions.group_by(&:time).transform_values do |prescs|
-      prescs.sum { |p| p.quantity.to_i }
-    end
-
-    current_quantity_at_time = current_doses[@time] || 0
-    difference = @quantity - current_quantity_at_time
-
-    if @quantity.zero?
-      success("Dose de #{medication.substance} às #{@time} foi retirada")
-      presc = Prescription.create!(
-        patient: patient,
-        physician: physician,
-        current_user: @current_user,
-        medication: medication,
-        quantity: @quantity,
-        time: @time,
-        action_type: 10
-      )
-    elsif difference == 0
-      success("#{medication.substance}: paciente já toma essa dose às #{@time}. Nenhuma alteração feita.")
-    elsif difference > 0
-      presc = Prescription.create!(
-        patient: patient,
-        physician: physician,
-        current_user: @current_user,
-        medication: medication,
-        quantity: @quantity,
-        time: @time,
-        action_type: 1
-      )
-      success("Dose de #{medication.substance} às #{@time} foi aumentada de #{current_quantity_at_time} para #{@quantity} ")
-    else
-      presc = Prescription.create!(
-        patient: patient,
-        physician: physician,
-        current_user: @current_user,
-        medication: medication,
-        quantity: @quantity,
-        time: @time,
-        action_type: 2
-      )
-      success("Dose de #{medication.substance} às #{@time} foi reduzida de #{current_quantity_at_time} para #{@quantity} ")
+      success(result[1])
+    rescue ActiveRecord::RecordInvalid => e
+      error("Erro ao salvar a prescrição: #{e.message}")
     end
   end
-
-  private
 
   def success(message)
     { status: :created, message: message }
@@ -101,5 +53,19 @@ class PrescriptionProcessor
 
   def error(message)
     { status: :unprocessable_entity, message: message }
+  end
+
+  private
+
+  def action_type(new_quantity, old_quantity)
+    if new_quantity > old_quantity
+      [:increase_dosis, "Dose de #{@medication.substance} às #{@time} foi aumentada de #{old_quantity} para #{new_quantity}."]
+    elsif new_quantity < old_quantity
+      [:reduce_dosis, "Dose de #{@medication.substance} às #{@time} foi reduzida de #{old_quantity} para #{new_quantity}."]
+    elsif new_quantity.zero?
+      [:remove_medication, "Dose de #{@medication.substance} às #{@time} foi retirada."]
+    else
+      [:no_changes, "Essa já é a dose às #{@time}. Nenhuma alteração realizada."]
+    end
   end
 end
