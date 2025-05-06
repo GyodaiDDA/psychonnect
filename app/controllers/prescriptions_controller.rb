@@ -3,24 +3,24 @@ class PrescriptionsController < ApplicationController
 
   def index
     patient = User.find_by(id: params[:patient_id])
-    return render json: { error: 'Paciente não encontrado' }, status: :not_found unless patient
+    return render json: { error: "Paciente não encontrado" }, status: :not_found unless patient
     medication = Medication.find_by(id: params[:medication_id])
     time = params[:time]
-  
+
     prescriptions = TreatmentAnalyzer.current_treatment_for(patient, medication:, time:)
     render json: prescriptions
   end
 
   def history
     patient = User.find_by(id: params[:patient_id])
-    return render json: { error: 'Paciente não encontrado' }, status: :not_found unless patient
+    return render json: { error: "Paciente não encontrado" }, status: :not_found unless patient
     medication = Medication.find_by(id: params[:medication_id])
     time = params[:time]
-  
+
     prescriptions = TreatmentAnalyzer.history(patient, medication:, time:)
     render json: prescriptions
   end
-  
+
   def show
     prescription = Prescription.find(params[:id])
     render json: prescription

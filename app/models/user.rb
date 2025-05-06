@@ -13,8 +13,9 @@ class User < ApplicationRecord
 
   # Auth and validation
   has_secure_password
-  validates :name, :email, :role, presence: true
+  validates :name, :email, presence: true
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :role, inclusion: { in: %w[admin patient physician], message: "%{value} is not a valid role" }
 
-  enum :role, patient: 0, physician: 1, admin: 10
+  enum :role, patient: 0, physician: 1, blocked: 9, admin: 10
 end

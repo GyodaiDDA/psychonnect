@@ -13,7 +13,7 @@ RSpec.describe 'Auth API', type: :request do
           email: { type: :string, format: :email },
           password: { type: :string, format: :password }
         },
-        required: ['email', 'password']
+        required: [ 'email', 'password' ]
       }
 
       response '200', 'login bem-sucedido' do

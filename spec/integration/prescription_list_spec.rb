@@ -48,7 +48,7 @@ RSpec.describe 'API Prescription Lists', type: :request do
       parameter name: :patient_id, in: :path, type: :integer, required: true
       parameter name: :medication_id, in: :query, type: :integer, required: false
       parameter name: :time, in: :query, type: :string, required: false
-  
+
       response '200', 'histórico retornado' do
         let(:patient_id) { patient.id }
         run_test!
@@ -62,7 +62,7 @@ RSpec.describe 'API Prescription Lists', type: :request do
           expect(data.all? { |p| p["medication_id"] == medication1.id }).to be true
         end
       end
-      
+
       response '200', 'histórico filtrado por horário' do
         let(:patient_id) { patient.id }
         let(:time) { "10:00" }
@@ -71,7 +71,7 @@ RSpec.describe 'API Prescription Lists', type: :request do
           expect(data.all? { |p| p["time"] == "10:00" }).to be true
         end
       end
-      
+
       response '404', 'paciente não encontrado' do
         let(:patient_id) { 9999 }
         run_test!

@@ -38,7 +38,7 @@ RSpec.describe 'API Prescriptions', type: :request do
 
         run_test!
       end
-      
+
       response '422', 'retorna erro se a receita for inválida' do
         let(:patient) { create(:user, :patient) }
         let(:physician) { create(:user, :physician) }
@@ -55,7 +55,7 @@ RSpec.describe 'API Prescriptions', type: :request do
             time: "08:00"
           }
         end
-          
+
         run_test!
       end
     end

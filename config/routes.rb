@@ -8,10 +8,11 @@ Rails.application.routes.draw do
   resources :prescriptions
 
   # Other get method routes
-  get 'prescriptions/history/:patient_id', to: 'prescriptions#history'
+  get "prescriptions/history/:patient_id", to: "prescriptions#history"
   get "up" => "rails/health#show", as: :rails_health_check
   get "/secret", to: "secret#index"
 
-  # Other post method routes
+  # Other methods routes
   post "/login", to: "auth#login"
+  patch "users/:id/role", to: "users#update_role"
 end

@@ -34,23 +34,28 @@ RSpec.describe 'API Users', type: :request do
           name: { type: :string },
           email: { type: :string, format: :email },
           password: { type: :string, format: :password },
-          role: { type: :integer, enum: [ 0, 1, 10 ] }
+          role: { type: :integer, enum: [ patient: 0, physician: 1, blocked: 9, admin: 10 ] }
         },
         required: [ 'name', 'email', 'password', 'role' ]
       }
 
       response '201', 'usuário criado' do
-        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: 10 } } }
+        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: :physician } } }
         run_test!
       end
 
       response '422', 'usuário sem e-mail não criado' do
-        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao', password: 'uLyt@2', role: 10 } } }
+        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao', password: 'uLyt@2', role: :patient } } }
         run_test!
       end
 
       response '422', 'usuário sem senha não criado' do
-        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: '', role: 10 } } }
+        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: '', role: :patient } } }
+        run_test!
+      end
+
+      response '422', 'usuário admin não criado' do
+        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: :admin } } }
         run_test!
       end
     end
@@ -71,9 +76,17 @@ RSpec.describe 'API Users', type: :request do
         run_test!
       end
 
+      response '200', 'busca retorna usuário atual' do
+        let!(:user) { create(:user, :patient) }
+        let(:id) { 2 }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
+        run_test!
+      end
+
       response '404', 'usuário não encontrado' do
+        let!(:user) { create(:user, :admin) }
         let(:id) { 0 }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: 1 }, Rails.application.secret_key_base)}" }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
         run_test!
       end
     end
@@ -120,14 +133,23 @@ RSpec.describe 'API Users', type: :request do
 
       response '204', 'usuário removido' do
         let!(:user_record) { create(:user, :patient) }
+        let!(:admin) { create(:user, :admin) }
         let(:id) { user_record.id }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user_record.id }, Rails.application.secret_key_base)}" }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
         run_test!
       end
 
       response '404', 'usuário não encontrado' do
+        let!(:admin) { create(:user, :admin) }
         let(:id) { 0 }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: 1 }, Rails.application.secret_key_base)}" }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
+        run_test!
+      end
+
+      response '401', 'remoção não autorizada' do
+        let!(:user_record) { create(:user, :patient) }
+        let(:id) { user_record.id }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: id }, Rails.application.secret_key_base)}" }
         run_test!
       end
     end
