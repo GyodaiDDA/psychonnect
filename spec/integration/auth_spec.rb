@@ -1,35 +1,65 @@
 require 'swagger_helper'
 
-RSpec.describe 'API secret', type: :request do
-  path '/secret' do
-    get 'Endpoint protegido' do
-      tags 'Auth'
-      security [ bearerAuth: [] ]
+RSpec.describe 'Auth API', type: :request do
+  path '/login' do
+    post 'Login do usuário' do
+      tags 'Autenticação'
+      consumes 'application/json'
       produces 'application/json'
+      security []
+      parameter name: :credentials, in: :body, schema: {
+        type: :object,
+        properties: {
+          email: { type: :string, format: :email },
+          password: { type: :string, format: :password }
+        },
+        required: ['email', 'password']
+      }
 
-      response '200', 'acesso permitido' do
-        let(:user) { create(:user, :patient) }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
+      response '200', 'login bem-sucedido' do
+        let!(:user) { create(:user, :patient, password: '123456') }
 
-        run_test!
-      end
+        let(:credentials) do
+          {
+            email: user.email,
+            password: '123456'
+          }
+        end
 
-      response '401', 'Token inválido (JWT::DecodeError)' do
-        let(:Authorization) { 'Bearer INVALID.TOKEN.STRING' }
         run_test! do |response|
-          expect(response.status).to eq(401)
-          expect(response.body).to include("Acesso negado")
+          data = JSON.parse(response.body)
+          expect(data['token']).to be_present
+          expect(data['user']['email']).to eq(user.email)
         end
       end
 
-      response '401', 'Usuário não existe (ActiveRecord::RecordNotFound)' do
-        let(:Authorization) do
-          token = JWT.encode({ user_id: 999_999 }, Rails.application.secret_key_base)
-          "Bearer #{token}"
+      response '401', 'login falhou (credenciais inválidas)' do
+        let!(:user) { create(:user, password: '123456', role: :patient) }
+
+        let(:credentials) do
+          {
+            email: user.email,
+            password: 'senhaerrada'
+          }
         end
+
         run_test! do |response|
           expect(response.status).to eq(401)
-          expect(response.body).to include("Acesso negado")
+          expect(response.body).to include('Credenciais inválidas')
+        end
+      end
+
+      response '401', 'usuário não existe' do
+        let(:credentials) do
+          {
+            email: 'naoexiste@email.com',
+            password: 'qualquercoisa'
+          }
+        end
+
+        run_test! do |response|
+          expect(response.status).to eq(401)
+          expect(response.body).to include('Credenciais inválidas')
         end
       end
     end
