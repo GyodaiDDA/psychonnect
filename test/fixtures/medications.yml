@@ -3,9 +3,9 @@
 one:
   substance: MyString
   dosage: 1.5
-  unit: 1
+  measure: 1
 
 two:
   substance: MyString
   dosage: 1.5
-  unit: 1
+  measure: 1

@@ -1,9 +1,10 @@
-substances = [ "Pregabalina", "Bupropiona", "Cronopianina", "Arritmomicina", "Superiorona" ]
-
 FactoryBot.define do
+  substances = [ "Pregabalina", "Bupropiona", "Cronopianina", "Arritmomicina", "Superiorona" ]
+  measures = [ "mg", "g", "mg/ml" ]
+
   factory :medication do
     substance { substances.sample }
-    dosage { 10*rand(1..80) }
-    unit { [ 'mg', 'g', 'mg/ml' ].sample }
+    dosage { 50 }
+    measure { measures.sample }
   end
 end

@@ -9,7 +9,7 @@ class PrescriptionProcessor
     @patient = User.find_by(id: params[:patient_id])
     @current_user = current_user
     @medication = Medication.find_by(id: params[:medication_id])
-    @quantity = params[:quantity].to_i
+    @quantity = params[:quantity]
     @time = params[:time]
   end
 
@@ -17,16 +17,14 @@ class PrescriptionProcessor
     return error("Medicação não encontrada.") unless @medication
     return error("Paciente não encontrado.") unless @patient
     return error("Médico não encontrado.") unless @physician
-    return error("Usuário não autorizado.") unless @current_user.in?([@physician, @patient])
+    return error("Usuário não autorizado.") unless @current_user.in?([ @physician, @patient ])
 
     current_treatment = TreatmentAnalyzer.current_treatment_for(@patient, medication: @medication)
-    current_qty_at_time = TreatmentAnalyzer.current_treatment_for(@patient, medication: @medication, time: @time).pluck(:quantity).first
+    current_qty_at_time = TreatmentAnalyzer.current_treatment_for(@patient, medication: @medication, time: @time).pluck(:quantity)[0]
 
     result =
       if current_treatment.empty?
-        [:new_medication, "#{@medication.substance} foi adicionado ao tratamento."]
-      #elsif current_qty_at_time.nil?
-      #  [:new_time, "Dose de #{@medication.substance} às #{@time} acrescentada ao horário #{@time}"]
+        [ :new_medication, "#{@medication.substance} foi adicionado ao tratamento." ]
       else
         action_type(@quantity, current_qty_at_time)
       end
@@ -41,6 +39,7 @@ class PrescriptionProcessor
         time: @time,
         action_type: result[0]
       )
+      PhysicianPatientLinker.call(@physician, @patient)
       success(result[1])
     rescue ActiveRecord::RecordInvalid => e
       error("Erro ao salvar a prescrição: #{e.message}")
@@ -58,14 +57,14 @@ class PrescriptionProcessor
   private
 
   def action_type(new_quantity, old_quantity)
-    if new_quantity > old_quantity
-      [:increase_dosis, "Dose de #{@medication.substance} às #{@time} foi aumentada de #{old_quantity} para #{new_quantity}."]
+    if new_quantity.zero?
+      [ :remove_medication, "Dose de #{@medication.substance} às #{@time} foi retirada." ]
     elsif new_quantity < old_quantity
-      [:reduce_dosis, "Dose de #{@medication.substance} às #{@time} foi reduzida de #{old_quantity} para #{new_quantity}."]
-    elsif new_quantity.zero?
-      [:remove_medication, "Dose de #{@medication.substance} às #{@time} foi retirada."]
+      [ :reduce_dosis, "Dose de #{@medication.substance} às #{@time} foi reduzida de #{old_quantity} para #{new_quantity}." ]
+    elsif new_quantity > old_quantity
+      [ :increase_dosis, "Dose de #{@medication.substance} às #{@time} foi aumentada de #{old_quantity} para #{new_quantity}." ]
     else
-      [:no_changes, "Essa já é a dose às #{@time}. Nenhuma alteração realizada."]
+      [ :no_changes, "Essa já é a dose às #{@time}. Nenhuma alteração realizada." ]
     end
   end
 end

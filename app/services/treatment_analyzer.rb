@@ -6,7 +6,7 @@ class TreatmentAnalyzer
     query = query.where(time:) if time # Quantidade da medicação / ou de todas as medicações se medication: nil num determinado horário
     query
   end
-  
+
   def self.history(patient, medication: nil, time: nil)
     query = full_query.where(patient:) # Histórico de tratamento de um paciente
     query = query.where(medication:) if medication # Histórico de horários e quantidades do remédio para o paciente
@@ -16,11 +16,11 @@ class TreatmentAnalyzer
 
   private
 
-  def self.full_query()
+  def self.full_query
     query = Prescription.select(
       <<~SQL
         *,
-        ROW_NUMBER() 
+        ROW_NUMBER()#{' '}
         OVER(
           PARTITION BY patient_id, medication_id, time
           ORDER BY created_at DESC
@@ -30,7 +30,7 @@ class TreatmentAnalyzer
     )
   end
 
-  def self.current_treatment()
+  def self.current_treatment
     Prescription.from(full_query, :prescriptions)
                 .where("row_number = 1 AND quantity > 0")
   end

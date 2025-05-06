@@ -44,11 +44,14 @@ group :development, :test do
   gem "faker", "~> 3.5"
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
+  gem "rubocop-rails-omakase"
 
   # rspec for automated testing
   gem "rspec-rails"
 
   # rswag for testing
   gem "rswag"
+
+  # checking for test coverage
+  gem "simplecov", require: false
 end
