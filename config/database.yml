@@ -12,7 +12,7 @@ development:
 
 test:
   <<: *default
-  database: psychonnect_test
+  database: psychonnect_dev
 
 production:
   <<: *default
