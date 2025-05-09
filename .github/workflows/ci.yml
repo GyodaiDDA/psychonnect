@@ -72,4 +72,4 @@ jobs:
           RAILS_ENV: test
           PSYCHONNECT_DATABASE_USERNAME: postgres
           PSYCHONNECT_DATABASE_PASSWORD: postgres
-        run: bin/rails db:prepare && && bundle exec rspec
+        run: bin/rails db:prepare && bundle exec rspec
