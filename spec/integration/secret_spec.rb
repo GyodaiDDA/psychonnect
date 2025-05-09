@@ -18,7 +18,7 @@ RSpec.describe 'API secret', type: :request do
         let(:Authorization) { 'Bearer INVALID.TOKEN.STRING' }
         run_test! do |response|
           expect(response.status).to eq(401)
-          expect(response.body).to include("Acesso negado")
+          expect(response.body).to include("Invalid authentication credentials")
         end
       end
 
@@ -29,7 +29,7 @@ RSpec.describe 'API secret', type: :request do
         end
         run_test! do |response|
           expect(response.status).to eq(401)
-          expect(response.body).to include("Acesso negado")
+          expect(response.body).to include("Invalid authentication credentials")
         end
       end
     end

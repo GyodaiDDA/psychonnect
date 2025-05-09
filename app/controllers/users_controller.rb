@@ -39,14 +39,14 @@ class UsersController < ApplicationController
     user = User.find(params[:id])
     role = safe_role(params[:role])
 
-    begin
-      if user.update(role:)
-        render json: user
-      else
-        render json: user.errors, status: :unprocessable_entity
-      end
-    rescue ArgumentError => e
-      render json: { error: "Role inválido: #{role}" }, status: :unprocessable_entity
+    unless User.roles.key?(role.to_s)
+      return render json: { error: I18n.t("errors.messages.invalid", role: role) }, status: :unprocessable_entity
+    end
+
+    if user.update(role:)
+      render json: user
+    else
+      render json: { error: I18n.t("errors.messages.invalid", role: role) }, status: :unprocessable_entity
     end
   end
 

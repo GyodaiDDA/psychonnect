@@ -14,10 +14,20 @@ class ApplicationController < ActionController::API
   end
 
   def authorize!
-    render json: { error: "Acesso negado" }, status: :unauthorized unless current_user
+    render json: { 
+      error: {
+        code: "unauthorized",
+        message: "Invalid authentication credentials"
+      }
+    },status: :unauthorized unless current_user
   end
 
   def authorize_admin!
-    render json: { error: "Acesso negado" }, status: :unauthorized unless current_user&.admin?
+    render json: { 
+      error: {
+        code: "unauthorized",
+        message: "Invalid authentication credentials"
+      }
+    },status: :unauthorized unless current_user&.admin?
   end
 end
