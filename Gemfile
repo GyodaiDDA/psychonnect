@@ -45,7 +45,7 @@ group :development, :test do
   gem "factory_bot_rails"
   gem "faker", "~> 3.5"
 
-    # rspec for automated testing
+  # rspec for automated testing
   gem "rspec-rails"
 
   # rswag for testing

@@ -7,6 +7,21 @@ en:
         restrict_dependent_destroy:
           has_one: Cannot delete record because a dependent %{record} exists
           has_many: Cannot delete record because dependent %{record} exist
+  api:
+    success:
+      listed: ""
+      item_found: "Operation completed"
+      item_created: "Successfully created"
+      item_updated: "Successfully updated"
+      item_deleted: "Successfully deleted"
+    error:
+      not_found: "Not found"
+      unauthorized: "Access denied"
+      invalid_credentials: "Invalid credentials"
+      invalid_parameters: "Failed to create - Invalid parameters"
+      missing_parameters: "Missing required parameters"
+      forbidden: "You do not have access to this"
+      unprocessable_entity: "Unprocessable entity"
   date:
     abbr_day_names:
     - Sun

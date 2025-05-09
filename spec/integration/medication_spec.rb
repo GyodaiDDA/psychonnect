@@ -2,12 +2,12 @@ require 'swagger_helper'
 
 RSpec.describe 'API Medications', type: :request do
   path '/medications' do
-    get 'Lista todas as medicações' do
-      tags 'Medicações'
+    get 'List all medications' do
+      tags 'Medication'
       produces 'application/json'
       security []
 
-      response '200', 'lista retornada com sucesso' do
+      response '200', 'List returned with success' do
         before do
           3.times do
             create(:medication)
@@ -15,33 +15,52 @@ RSpec.describe 'API Medications', type: :request do
         end
 
         run_test! do |response|
-          data = JSON.parse(response.body)
-          expect(data.size).to eq(3)
+          response = JSON.parse(response.body)
+          expect(response["data"].size).to eq(3)
         end
       end
     end
 
-    post 'Cria uma nova medicação' do
-      tags 'Medicações'
+    post 'Create new medication' do
+      tags 'Medication'
       consumes 'application/json'
       security []
       parameter name: :medication, in: :body, schema: {
         type: :object,
         properties: {
           substance: { type: :string },
-          dosage: { type: :float },
+          dosage: { type: :number },
           measure: { type: :string }
-        }
+        },
+        required: [ 'substance', 'dosage', 'measure' ]
       }
 
       response '201', 'medicação criada com sucesso' do
-        let!(:medication) { create(:medication) }
-        run_test!
+        let!(:medication) { create(:medication, substance: 'Cronopianina') }
+
+        run_test! do |response|
+          expect(response.status).to eq(201)
+          body = JSON.parse(response.body)
+          expect(body['message']).to eq(I18n.t('api.success.item_created'))
+          expect(Medication.last.substance).to eq('Cronopianina')
+        end
       end
 
-      response '422', 'dados inválidos' do
-        let(:medication) { { substance: '', dosage: 50, measure: 'g' } }
-        run_test!
+      response '422', 'Invalid data', content: {
+        'application/json' => {
+          example: {
+            status: "unprocessable_entity",
+            message: "Invalid parameters",
+            errors: [ "Dosage can't be blank" ]
+          }
+        }
+      } do
+        let(:medication) { { substance: '', dosage: nil, measure: '' } }
+
+        run_test! do |response|
+          expect(response.status).to eq(422)
+          body = JSON.parse(response.body)
+        end
       end
     end
   end
@@ -49,68 +68,101 @@ RSpec.describe 'API Medications', type: :request do
   path '/medications/{id}' do
     parameter name: :id, in: :path, type: :integer
 
-    get 'Exibe uma medicação específica' do
-      tags 'Medicações'
+    get 'Finds a specific medication' do
+      tags 'Medication'
       produces 'application/json'
       security []
 
-      response '200', 'medicação encontrada' do
-        let!(:med) { create(:medication) }
-        let(:id) { med.id }
-        run_test!
+      response '200', 'Medication found' do
+        let!(:medication) { create(:medication, substance: 'Pregabalina') }
+        let(:id) { medication.id }
+
+        run_test! do |response|
+          expect(response.status).to eq(200)
+          body = JSON.parse(response.body)
+          expect(body['data']['substance']).to eq('Pregabalina')
+        end
       end
 
-      response '404', 'medicação não encontrada' do
+      response '404', 'Medication not found', content: {
+        'application/json' => {
+          example: {
+            status: "not_found",
+            message: "Item not found"
+          }
+        }
+      } do
         let(:id) { 0 }
-        run_test!
+
+        run_test! do |response|
+          expect(response.status).to eq(404)
+          body = JSON.parse(response.body)
+          expect(body['error']).to eq(I18n.t('api.error.not_found'))
+        end
       end
     end
 
-    put 'Atualiza uma medicação' do
-      tags 'Medicações'
+    put 'Updates medication' do
+      tags 'Medication'
       consumes 'application/json'
       security []
       parameter name: :medication, in: :body, schema: {
         type: :object,
         properties: {
-          substance: { type: :string }
+          substance: { type: :string },
+          dosage: { type: :number },
+          measure: { type: :string }
         }
       }
 
-      response '200', 'medicação atualizada' do
-        let!(:med) { create(:medication) }
-        let(:id) { med.id }
-        let(:medication) { { substance: 'NovaSubstância' } }
-        run_test!
-      end
-
-      response '404', 'medicação não encontrada' do
-        let(:id) { 0 }
-        let(:medication) { { substance: 'NovaSubstância' } }
-        run_test!
-      end
-
-      response '422', 'medicação inválida' do
-        let!(:medication_record) { create(:medication) }
+      response '200', 'Medication successfully updated' do
+        let!(:medication_record) { create(:medication, dosage: 100) }
         let(:id) { medication_record.id }
-        let(:medication) { { substance: '' } }
-        run_test!
+        let(:medication) { { dosage: 75 } }
+
+        run_test! do |response|
+          expect(response.status).to eq(200)
+          body = JSON.parse(response.body)
+          expect(body['message']).to eq(I18n.t('api.success.item_updated'))
+          expect(Medication.first.dosage).to eq(75)
+        end
+      end
+
+      response '404', 'Medication not found' do
+        let(:id) { 0 }
+        let(:medication) { { dosage: 75 } }
+
+        run_test! do |response|
+          expect(response.status).to eq(404)
+          body = JSON.parse(response.body)
+          puts body
+          expect(body['error']).to eq(I18n.t('api.error.not_found'))
+        end
       end
     end
 
-    delete 'Remove uma medicação' do
-      tags 'Medicações'
+    delete 'Deletes medication' do
+      tags 'Medication'
       security []
 
-      response '204', 'medicação removida com sucesso' do
-        let!(:med) { create(:medication) }
-        let(:id) { med.id }
-        run_test!
+      response '204', 'Medication successfully deleted' do
+        let!(:medication_record) { create(:medication) }
+        let(:id) { medication_record.id }
+
+        run_test! do |response|
+          expect(response.status).to eq(204)
+          expect(Medication.exists?(id)).to be_falsey
+        end
       end
 
-      response '404', 'medicação não encontrada' do
+      response '404', 'Medication not found' do
         let(:id) { 0 }
-        run_test!
+
+        run_test! do |response|
+          expect(response.status).to eq(404)
+          body = JSON.parse(response.body)
+          expect(body['error']).to eq(I18n.t('api.error.not_found'))
+        end
       end
     end
   end

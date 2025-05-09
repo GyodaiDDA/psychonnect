@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::API
+  include ApiResponse
+
   def current_user
     auth_header = request.headers["Authorization"]
     token = auth_header&.split(" ")&.last
@@ -14,20 +16,18 @@ class ApplicationController < ActionController::API
   end
 
   def authorize!
-    render json: { 
-      error: {
-        code: "unauthorized",
-        message: "Invalid authentication credentials"
-      }
-    },status: :unauthorized unless current_user
+    return if current_user
+
+    render_api_error(:unauthorized, status: :unauthorized)
   end
 
   def authorize_admin!
-    render json: { 
-      error: {
-        code: "unauthorized",
-        message: "Invalid authentication credentials"
-      }
-    },status: :unauthorized unless current_user&.admin?
+    return if current_user&.admin?
+
+    render_api_error(:unauthorized, status: :unauthorized)
+  end
+
+  rescue_from ActiveRecord::RecordNotFound do |_e|
+    render_api_error(:not_found, status: :not_found)
   end
 end

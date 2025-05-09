@@ -7,6 +7,20 @@ pt-BR:
         restrict_dependent_destroy:
           has_one: Não é possível excluir o registro pois existe um %{record} dependente
           has_many: Não é possível excluir o registro pois existem %{record} dependentes
+  api:
+    success:
+      listed: ""
+      item_found: "Operação concluída"
+      item_created: "Item criado com sucesso"
+      item_updated: "Item atualizado com sucesso"
+      item_deleted: "Item deletado com sucesso"
+    errors:
+      not_found: "Não encontrado"
+      unauthorized: "Acesso negado"
+      invalid_credentials: "Credenciais inválidas"
+      invalid_parameters: "Criação falhou - Parâmetros inválidos"
+      missing_parameters: "Parâmetros faltando"
+      forbidden: "Você não tem acesso a isso"
   date:
     abbr_day_names:
     - dom
