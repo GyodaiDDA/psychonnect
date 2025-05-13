@@ -11,9 +11,12 @@ FactoryBot.define do
     trait :physician do
       role { 'physician' }
     end
+  end
 
-    trait :admin do
-      role { 'admin' }
-    end
+  factory :admin, class: 'User' do
+    name { Faker::Internet.username }
+    email { Faker::Internet.email }
+    password { Faker::Internet.password }
+    role { :admin }
   end
 end

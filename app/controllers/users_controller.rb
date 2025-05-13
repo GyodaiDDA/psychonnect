@@ -1,9 +1,5 @@
 class UsersController < ApplicationController
-  before_action :authorize_admin!, only: [ :index, :update_role, :destroy ]
-
-  def index
-    render json: User.all
-  end
+  before_action :authorize!, only: [ :show, :update ]
 
   def show
     user = if current_user.admin?
@@ -26,34 +22,13 @@ class UsersController < ApplicationController
   end
 
   def update
-    user = User.find(params[:id])
+    user = current_user
 
     if user.update(user_params)
       render json: user
     else
       render json: user.errors, status: :unprocessable_entity
     end
-  end
-
-  def update_role
-    user = User.find(params[:id])
-    role = safe_role(params[:role])
-
-    unless User.roles.key?(role.to_s)
-      return render json: { error: I18n.t("errors.messages.invalid", role: role) }, status: :unprocessable_entity
-    end
-
-    if user.update(role:)
-      render json: user
-    else
-      render json: { error: I18n.t("errors.messages.invalid", role: role) }, status: :unprocessable_entity
-    end
-  end
-
-  def destroy
-    user = User.find(params[:id])
-    user.destroy
-    head :no_content
   end
 
   private

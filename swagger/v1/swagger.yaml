@@ -12,6 +12,265 @@ components:
 security:
 - bearerAuth: []
 paths:
+  "/login":
+    post:
+      summary: Login do usuário
+      tags:
+      - Autenticação
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: login bem-sucedido
+        '401':
+          description: usuário não existe
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+              required:
+              - email
+              - password
+  "/medications":
+    get:
+      summary: List all medications
+      tags:
+      - Medication
+      security: []
+      responses:
+        '200':
+          description: List returned with success
+    post:
+      summary: Create new medication
+      tags:
+      - Medication
+      security: []
+      parameters: []
+      responses:
+        '201':
+          description: medicação criada com sucesso
+        '422':
+          description: Invalid data
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                substance:
+                  type: string
+                dosage:
+                  type: number
+                measure:
+                  type: string
+              required:
+              - substance
+              - dosage
+              - measure
+  "/medications/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    get:
+      summary: Finds a specific medication
+      tags:
+      - Medication
+      security: []
+      responses:
+        '200':
+          description: Medication found
+        '404':
+          description: Medication not found
+    put:
+      summary: Updates medication
+      tags:
+      - Medication
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: Medication successfully updated
+        '404':
+          description: Medication not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                substance:
+                  type: string
+                dosage:
+                  type: number
+                measure:
+                  type: string
+    delete:
+      summary: Deletes medication
+      tags:
+      - Medication
+      security: []
+      responses:
+        '204':
+          description: Medication successfully deleted
+        '404':
+          description: Medication not found
+  "/prescriptions":
+    get:
+      summary: Consulta o tratamento atual
+      tags:
+      - Prescrições
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: patient_id
+        in: query
+        required: true
+        schema:
+          type: integer
+      - name: medication_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: time
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: tratamento atual retornado
+        '404':
+          description: paciente não encontrado
+    post:
+      summary: Cria uma nova prescrição
+      tags:
+      - Prescrições
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '201':
+          description: prescrição criada com sucesso
+        '422':
+          description: retorna erro se a receita for inválida
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                patient_id:
+                  type: integer
+                physician_id:
+                  type: integer
+                current_user_id:
+                  type: integer
+                medication_id:
+                  type: integer
+                quantity:
+                  type: number
+                time:
+                  type: string
+              required:
+              - patient_id
+              - physician_id
+              - current_user_id
+              - medication_id
+              - quantity
+              - time
+  "/prescriptions/history/{patient_id}":
+    get:
+      summary: Consulta o histórico de tratamento
+      tags:
+      - Prescrições
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: patient_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: medication_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: time
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: histórico filtrado por horário
+        '404':
+          description: paciente não encontrado
+  "/prescriptions/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Exibe uma prescrição específica
+      tags:
+      - Prescrições
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: prescrição encontrada
+        '404':
+          description: prescrição não encontrada
+    put:
+      summary: Atualiza uma prescrição
+      tags:
+      - Prescrições
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: prescrição atualizada
+        '404':
+          description: prescrição não encontrada
+        '422':
+          description: medicação inválida
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+                time:
+                  type: string
+    delete:
+      summary: Remove uma prescrição
+      tags:
+      - Prescrições
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: prescrição removida
+        '404':
+          description: prescrição não encontrada
   "/secret":
     get:
       summary: Endpoint protegido
@@ -23,9 +282,150 @@ paths:
         '200':
           description: acesso permitido
         '401':
-          description: acesso negado
+          description: Usuário não existe (ActiveRecord::RecordNotFound)
+  "/users/{id}/role":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    patch:
+      summary: Atualiza o papel de um usuário
+      tags:
+      - Usuários
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: role
+        in: query
+        enum:
+        - patient
+        - physician
+        - admin
+        required: true
+        schema:
+          type: string
+        description: ":\n * `patient` \n * `physician` \n * `admin` \n "
+      responses:
+        '200':
+          description: role atualizado com sucesso
+        '401':
+          description: usuário não é admin
+        '422':
+          description: role inválido
+  "/users":
+    get:
+      summary: Lista todos os usuários
+      tags:
+      - Usuários
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: usuários listados
+        '401':
+          description: sem token
+    post:
+      summary: Cria um novo usuário
+      tags:
+      - Usuários
+      security: []
+      parameters: []
+      responses:
+        '201':
+          description: usuário criado
+        '422':
+          description: usuário admin não criado
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                      format: email
+                    password:
+                      type: string
+                      format: password
+                    role:
+                      type: integer
+                      enum:
+                      - patient: 0
+                        physician: 1
+                        blocked: 9
+                        admin: 10
+                  required:
+                  - name
+                  - email
+                  - password
+                  - role
+              required:
+              - user
+  "/users/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Busca um usuário específico
+      tags:
+      - Usuários
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: busca retorna usuário atual
+        '404':
+          description: usuário não encontrado
+    put:
+      summary: Atualiza um usuário
+      tags:
+      - Usuários
+      security:
+      - bearerAuth: []
+      parameters: []
+      responses:
+        '200':
+          description: usuário atualizado
+        '422':
+          description: entidade não processável
+        '404':
+          description: usuário não encontrado
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+    delete:
+      summary: Remove um usuário
+      tags:
+      - Usuários
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: usuário removido
+        '404':
+          description: usuário não encontrado
+        '401':
+          description: remoção não autorizada
 servers:
-- url: https://{defaultHost}
+- url: http://{defaultHost}
   variables:
     defaultHost:
       default: localhost:3000

@@ -24,7 +24,7 @@ class ApplicationController < ActionController::API
   def authorize_admin!
     return if current_user&.admin?
 
-    render_api_error(:unauthorized, status: :unauthorized)
+    render_api_error(:forbidden, status: :forbidden)
   end
 
   rescue_from ActiveRecord::RecordNotFound do |_e|

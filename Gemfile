@@ -21,6 +21,9 @@ gem "pg", "~> 1.5"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 
+# Using CORS
+gem "rack-cors"
+
 # Use the database-backed adapters for Rails.cache and Active Job
 gem "solid_cache"
 gem "solid_queue"
@@ -52,7 +55,9 @@ group :development, :test do
   gem "rswag"
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase"
+  # gem "rubocop-rails-omakase"
+  gem "rubocop-rails", require: false
+  gem "rubocop-rspec", require: false
 
   # checking for test coverage
   gem "simplecov", require: false

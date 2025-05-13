@@ -3,9 +3,12 @@ Rails.application.routes.draw do
   mount Rswag::Api::Engine => "/api-docs"
 
   # Endpoints using resources
-  resources :users
+  resources :users, only: [ :show, :create, :update ]
   resources :medications
   resources :prescriptions
+  namespace :admin do
+    resources :users, only: [ :index, :create, :update, :destroy ]
+  end
 
   # Other get method routes
   get "prescriptions/history/:patient_id", to: "prescriptions#history"

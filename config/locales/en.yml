@@ -18,7 +18,7 @@ en:
       not_found: "Not found"
       unauthorized: "Access denied"
       invalid_credentials: "Invalid credentials"
-      invalid_parameters: "Failed to create - Invalid parameters"
+      invalid_parameters: "Invalid parameters"
       missing_parameters: "Missing required parameters"
       forbidden: "You do not have access to this"
       unprocessable_entity: "Unprocessable entity"

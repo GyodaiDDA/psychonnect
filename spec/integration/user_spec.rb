@@ -2,13 +2,13 @@ require 'swagger_helper'
 
 RSpec.describe 'API Users', type: :request do
   path '/users' do
-    get 'Lista todos os usuários' do
-      tags 'Usuários'
+    get 'List all users' do
+      tags 'Users'
       security [ bearerAuth: [] ]
       produces 'application/json'
 
-      response '200', 'usuários listados' do
-        let!(:admin) { create(:user, :admin) }
+      response '200', 'users listed' do
+        let!(:admin) { create(:admin) }
         let!(:users) { 3.times { create(:user, :patient) } }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
 
@@ -18,43 +18,49 @@ RSpec.describe 'API Users', type: :request do
         end
       end
 
-      response '401', 'sem token' do
+      response '401', 'token missing' do
         let(:Authorization) { nil }
         run_test!
       end
     end
 
-    post 'Cria um novo usuário' do
-      tags 'Usuários'
+    post 'Creates new user' do
+      tags 'Users'
       security []
       consumes 'application/json'
       parameter name: :user, in: :body, schema: {
         type: :object,
         properties: {
-          name: { type: :string },
-          email: { type: :string, format: :email },
-          password: { type: :string, format: :password },
-          role: { type: :integer, enum: [ patient: 0, physician: 1, blocked: 9, admin: 10 ] }
+          user: {
+            type: :object,
+            properties: {
+              name: { type: :string },
+              email: { type: :string, format: :email },
+              password: { type: :string, format: :password },
+              role: { type: :integer, enum: [ patient: 0, physician: 1, blocked: 9, admin: 10 ] }
+            },
+            required: [ 'name', 'email', 'password', 'role' ]
+          }
         },
-        required: [ 'name', 'email', 'password', 'role' ]
+        required: [ 'user' ]
       }
 
-      response '201', 'usuário criado' do
+      response '201', 'user created' do
         let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: :physician } } }
         run_test!
       end
 
-      response '422', 'usuário sem e-mail não criado' do
+      response '422', 'user without email not created' do
         let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao', password: 'uLyt@2', role: :patient } } }
         run_test!
       end
 
-      response '422', 'usuário sem senha não criado' do
+      response '422', 'user without password not created' do
         let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: '', role: :patient } } }
         run_test!
       end
 
-      response '422', 'usuário admin não criado' do
+      response '422', 'user with role admin not created' do
         let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: :admin } } }
         run_test!
       end
@@ -64,19 +70,19 @@ RSpec.describe 'API Users', type: :request do
   path '/users/{id}' do
     parameter name: :id, in: :path, type: :string
 
-    get 'Busca um usuário específico' do
-      tags 'Usuários'
+    get 'Finds a specific user' do
+      tags 'Users'
       security [ bearerAuth: [] ]
       produces 'application/json'
 
-      response '200', 'usuário encontrado' do
+      response '200', 'user found' do
         let!(:user) { create(:user, :patient) }
         let(:id) { user.id }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
         run_test!
       end
 
-      response '200', 'busca retorna usuário atual' do
+      response '200', 'returns current user for non-admin' do
         let!(:user) { create(:user, :patient) }
         let(:id) { 2 }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
@@ -84,7 +90,7 @@ RSpec.describe 'API Users', type: :request do
       end
 
       response '404', 'usuário não encontrado' do
-        let!(:user) { create(:user, :admin) }
+        let!(:user) { create(:admin) }
         let(:id) { 0 }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
         run_test!
@@ -92,7 +98,7 @@ RSpec.describe 'API Users', type: :request do
     end
 
     put 'Atualiza um usuário' do
-      tags 'Usuários'
+      tags 'Users'
       security [ bearerAuth: [] ]
       consumes 'application/json'
       parameter name: :user, in: :body, schema: {
@@ -128,19 +134,19 @@ RSpec.describe 'API Users', type: :request do
     end
 
     delete 'Remove um usuário' do
-      tags 'Usuários'
+      tags 'Users'
       security [ bearerAuth: [] ]
 
       response '204', 'usuário removido' do
         let!(:user_record) { create(:user, :patient) }
-        let!(:admin) { create(:user, :admin) }
+        let!(:admin) { create(:admin) }
         let(:id) { user_record.id }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
         run_test!
       end
 
       response '404', 'usuário não encontrado' do
-        let!(:admin) { create(:user, :admin) }
+        let!(:admin) { create(:admin) }
         let(:id) { 0 }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
         run_test!
