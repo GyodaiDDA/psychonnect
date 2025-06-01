@@ -42,7 +42,7 @@ RSpec.describe 'API Users', type: :request do
             required: [ 'name', 'email', 'password', 'role' ]
           }
         },
-        required: [ 'user' ]
+        required: ['user']
       }
 
       response '201', 'user created' do

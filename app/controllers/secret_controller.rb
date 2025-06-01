@@ -4,7 +4,7 @@ class SecretController < ApplicationController
 
   def index
     render json: {
-      message: "Parabéns, você está autenticado!",
+      message: 'Parabéns, você está autenticado!',
       user: current_user.slice(:id, :name, :email, :role)
     }
   end

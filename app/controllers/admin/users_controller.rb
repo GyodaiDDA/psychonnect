@@ -1,4 +1,5 @@
 module Admin
+  # Has user management methods for admin-level users
   class UsersController < ApplicationController
     before_action :authorize!
     before_action :authorize_admin!
@@ -21,8 +22,8 @@ module Admin
       user = User.find(params[:id])
       role = params[:user]&.[](:role)
 
-      unless role.present? && !User.roles.key?(role.to_s)
-        return render_api_error(:invalid_parameter, status: :invalid_parameter)
+      unless role.present?
+        return render_api_error(:invalid_parameters, status: :unprocessable_entity)
       end
 
       if user.update(user_params)

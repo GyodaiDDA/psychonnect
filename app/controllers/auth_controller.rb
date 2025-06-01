@@ -1,3 +1,4 @@
+# Login methods using JWT gem
 class AuthController < ApplicationController
   def login
     user = User.find_by(email: params[:email])
@@ -5,13 +6,13 @@ class AuthController < ApplicationController
       token = encode_token({ user_id: user.id })
       render json: { token: token, user: user.slice(:id, :name, :email, :role) }
     else
-      render json: { error: "Credenciais inválidas" }, status: :unauthorized
+      render json: { error: 'Credenciais inválidas' }, status: :unauthorized
     end
   end
 
   private
 
   def encode_token(payload)
-    JWT.encode(payload, ENV["SECRET_KEY_BASE"], "HS256")
+    JWT.encode(payload, ENV['SECRET_KEY_BASE'], 'HS256')
   end
 end

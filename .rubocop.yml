@@ -9,3 +9,19 @@
 #
 # See https://docs.rubocop.org/rubocop/configuration
 
+plugins:
+  - rubocop-factory_bot
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-rspec_rails
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+AllCops:
+  Exclude:
+    - './bin/*'
+    - './spec/*'
+    - './spec/*/*'
+    - './db/**/*'
+    - './config/**/*'

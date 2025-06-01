@@ -30,7 +30,7 @@ RSpec.configure do |config|
           }
         }
       },
-      security: [ bearerAuth: [] ],
+      security: [bearerAuth: []],
       paths: {},
       servers: [
         {

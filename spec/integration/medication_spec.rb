@@ -9,14 +9,14 @@ RSpec.describe 'API Medications', type: :request do
 
       response '200', 'List returned with success' do
         before do
-          3.times do
-            create(:medication)
-          end
+          create(:medication, substance: 'Pregabalina')
+          create(:medication, substance: 'Cronopianina')
+          create(:medication, substance: 'Bupropiona')
         end
 
         run_test! do |response|
           response = JSON.parse(response.body)
-          expect(response["data"].size).to eq(3)
+          expect(response['data'].size).to eq(3)
         end
       end
     end
@@ -32,26 +32,26 @@ RSpec.describe 'API Medications', type: :request do
           dosage: { type: :number },
           measure: { type: :string }
         },
-        required: [ 'substance', 'dosage', 'measure' ]
+        required: %w[substance dosage measure]
       }
 
       response '201', 'medicação criada com sucesso' do
-        let!(:medication) { create(:medication, substance: 'Cronopianina') }
-
+        let(:medication) { {substance: 'Cronapianina', dosage: 250, measure: 'mg'} }
+                
         run_test! do |response|
           expect(response.status).to eq(201)
           body = JSON.parse(response.body)
           expect(body['message']).to eq(I18n.t('api.success.item_created'))
-          expect(Medication.last.substance).to eq('Cronopianina')
+          expect(Medication.last.substance).to eq('Cronapianina')
         end
       end
 
       response '422', 'Invalid data', content: {
         'application/json' => {
           example: {
-            status: "unprocessable_entity",
-            message: "Invalid parameters",
-            errors: [ "Dosage can't be blank" ]
+            status: 'unprocessable_entity',
+            message: 'Invalid parameters',
+            errors: ["Dosage can't be blank"]
           }
         }
       } do
@@ -59,7 +59,7 @@ RSpec.describe 'API Medications', type: :request do
 
         run_test! do |response|
           expect(response.status).to eq(422)
-          body = JSON.parse(response.body)
+          JSON.parse(response.body)
         end
       end
     end
@@ -87,8 +87,8 @@ RSpec.describe 'API Medications', type: :request do
       response '404', 'Medication not found', content: {
         'application/json' => {
           example: {
-            status: "not_found",
-            message: "Item not found"
+            status: 'not_found',
+            message: 'Item not found'
           }
         }
       } do

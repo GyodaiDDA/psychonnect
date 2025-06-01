@@ -8,17 +8,17 @@ RSpec.describe 'API Prescription Lists', type: :request do
   let(:Authorization) { "Bearer #{JWT.encode({ user_id: physician.id }, Rails.application.secret_key_base)}" }
 
   before do
-    create(:prescription, patient:, physician:, medication: medication1, quantity: 2, time: "10:00")
-    create(:prescription, patient:, physician:, medication: medication1, quantity: 1, time: "10:00") # mais recente
-    create(:prescription, patient:, physician:, medication: medication1, quantity: 1, time: "20:00")
-    create(:prescription, patient:, physician:, medication: medication2, quantity: 3, time: "14:00")
-    create(:prescription, patient:, physician:, medication: medication2, quantity: 0, time: "14:00") # removido
+    create(:prescription, patient:, physician:, medication: medication1, quantity: 2, time: '10:00')
+    create(:prescription, patient:, physician:, medication: medication1, quantity: 1, time: '10:00') # mais recente
+    create(:prescription, patient:, physician:, medication: medication1, quantity: 1, time: '20:00')
+    create(:prescription, patient:, physician:, medication: medication2, quantity: 3, time: '14:00')
+    create(:prescription, patient:, physician:, medication: medication2, quantity: 0, time: '14:00') # removido
   end
 
   path '/prescriptions' do
     get 'Consulta o tratamento atual' do
       tags 'Prescrições'
-      security [ bearerAuth: [] ]
+      security [bearerAuth: []]
       produces 'application/json'
       parameter name: :patient_id, in: :query, type: :integer, required: true
       parameter name: :medication_id, in: :query, type: :integer, required: false
@@ -43,7 +43,7 @@ RSpec.describe 'API Prescription Lists', type: :request do
   path '/prescriptions/history/{patient_id}' do
     get 'Consulta o histórico de tratamento' do
       tags 'Prescrições'
-      security [ bearerAuth: [] ]
+      security [bearerAuth: []]
       produces 'application/json'
       parameter name: :patient_id, in: :path, type: :integer, required: true
       parameter name: :medication_id, in: :query, type: :integer, required: false
@@ -59,16 +59,16 @@ RSpec.describe 'API Prescription Lists', type: :request do
         let(:medication_id) { medication1.id }
         run_test! do |response|
           data = JSON.parse(response.body)
-          expect(data.all? { |p| p["medication_id"] == medication1.id }).to be true
+          expect(data.all? { |p| p['medication_id'] == medication1.id }).to be true
         end
       end
 
       response '200', 'histórico filtrado por horário' do
         let(:patient_id) { patient.id }
-        let(:time) { "10:00" }
+        let(:time) { '10:00' }
         run_test! do |response|
           data = JSON.parse(response.body)
-          expect(data.all? { |p| p["time"] == "10:00" }).to be true
+          expect(data.all? { |p| p['time'] == '10:00' }).to be true
         end
       end
 

@@ -14,14 +14,20 @@ en:
       item_created: "Successfully created"
       item_updated: "Successfully updated"
       item_deleted: "Successfully deleted"
+      remove_medication: "%<substance>s dose at %<time>s was removed."
+      reduce_dosis: "Dose of %<substance>s at %<time>s reduced from %<old>f to %<new>f."
+      increase_dosis: "Dose of %<substance>s at %<time>s increased from %<old>f to %<new>f."
+      no_changes: "This dose was already prescribed at %<time>s."
     error:
-      not_found: "Not found"
+      not_found: "%<item>s not found"
       unauthorized: "Access denied"
       invalid_credentials: "Invalid credentials"
       invalid_parameters: "Invalid parameters"
       missing_parameters: "Missing required parameters"
       forbidden: "You do not have access to this"
       unprocessable_entity: "Unprocessable entity"
+      uniqueness: "This item is already in the database"
+      invalid_role: "This is not a valid role"
   date:
     abbr_day_names:
     - Sun

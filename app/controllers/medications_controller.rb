@@ -1,3 +1,4 @@
+# Medication CRUD
 class MedicationsController < ApplicationController
   def index
     render_api_success(:listed, data: Medication.all, status: :ok)

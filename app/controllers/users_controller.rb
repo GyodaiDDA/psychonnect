@@ -1,12 +1,13 @@
+# Users methods for regular level users
 class UsersController < ApplicationController
-  before_action :authorize!, only: [ :show, :update ]
+  before_action :authorize!, only: %i[show update]
 
   def show
     user = if current_user.admin?
-      User.find(params[:id])
-    else
-      current_user
-    end
+             User.find(params[:id])
+           else
+             current_user
+           end
     render json: user
   end
 
@@ -39,6 +40,7 @@ class UsersController < ApplicationController
 
   def safe_role(role)
     return role if %w[patient physician].include?(role.to_s) || current_user&.admin?
+
     nil
   end
 end

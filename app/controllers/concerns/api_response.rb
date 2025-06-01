@@ -1,3 +1,4 @@
+# Methods to standartize all success and error responses
 module ApiResponse
   def render_api_success(key, data: nil, status: :ok, locale: I18n.locale)
     message = I18n.t("api.success.#{key}", locale: locale)
