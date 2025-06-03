@@ -4,7 +4,7 @@ class ApplicationController < ActionController::API
 
   def current_user
     auth_header = request.headers['Authorization']
-    token = auth_header&.split(' ')&.last
+    token = auth_header&.split&.last
 
     return nil unless token
 

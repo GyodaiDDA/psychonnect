@@ -8,6 +8,11 @@ module Admin
       render_api_success(:listed, data: User.all, status: :ok)
     end
 
+    def show
+      user = User.find(params[:id])
+      render json: user
+    end
+
     def create
       user = User.new(user_params)
 
@@ -22,9 +27,7 @@ module Admin
       user = User.find(params[:id])
       role = params[:user]&.[](:role)
 
-      unless role.present?
-        return render_api_error(:invalid_parameters, status: :unprocessable_entity)
-      end
+      return render_api_error(:invalid_parameters, status: :unprocessable_entity) if role.blank?
 
       if user.update(user_params)
         render json: user
@@ -42,9 +45,8 @@ module Admin
     private
 
     def user_params
-      params.require(:user)
-            .permit(:name, :email, :password, :role)
-            .delete_if { |_k, v| v.blank? }
+      params.expect(user: %i[name email password role])
+            .compact_blank!
     end
   end
 end

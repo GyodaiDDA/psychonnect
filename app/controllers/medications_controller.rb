@@ -40,6 +40,6 @@ class MedicationsController < ApplicationController
   private
 
   def medication_params
-    params.require(:medication).permit(:substance, :dosage, :measure)
+    params.expect(medication: %i[substance dosage measure])
   end
 end

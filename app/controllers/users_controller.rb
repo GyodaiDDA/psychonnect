@@ -35,11 +35,11 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:name, :email, :password)
+    params.expect(user: %i[name email password])
   end
 
   def safe_role(role)
-    return role if %w[patient physician].include?(role.to_s) || current_user&.admin?
+    return role if %w[patient physician 1 0].include?(role.to_s) || current_user&.admin?
 
     nil
   end

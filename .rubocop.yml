@@ -25,3 +25,4 @@ AllCops:
     - './spec/*/*'
     - './db/**/*'
     - './config/**/*'
+  NewCops: enable

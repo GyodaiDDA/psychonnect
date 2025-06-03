@@ -3,8 +3,8 @@ require 'swagger_helper'
 RSpec.describe TreatmentAnalyzer do
   let(:patient) { create(:user, :patient) }
   let(:physician) { create(:user, :physician) }
-  let(:fst_medication) { create(:medication) }
-  let(:snd_medication) { create(:medication) }
+  let(:fst_medication) { create(:medication, substance: 'Paralolopina', dosage: 450, measure: 'mg') }
+  let(:snd_medication) { create(:medication, substance: 'Catilopene', dosage: 200, measure: 'mg/L') }
 
   before do
     # primeira receita, primeiro remédio, 2 comprimidos às 10:00

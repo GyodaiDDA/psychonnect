@@ -2,28 +2,6 @@ require 'swagger_helper'
 
 RSpec.describe 'API Users', type: :request do
   path '/users' do
-    get 'List all users' do
-      tags 'Users'
-      security [ bearerAuth: [] ]
-      produces 'application/json'
-
-      response '200', 'users listed' do
-        let!(:admin) { create(:admin) }
-        let!(:users) { 3.times { create(:user, :patient) } }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
-
-        run_test! do |response|
-          data = JSON.parse(response.body)
-          expect(data.length).to eq(4)
-        end
-      end
-
-      response '401', 'token missing' do
-        let(:Authorization) { nil }
-        run_test!
-      end
-    end
-
     post 'Creates new user' do
       tags 'Users'
       security []
@@ -46,7 +24,7 @@ RSpec.describe 'API Users', type: :request do
       }
 
       response '201', 'user created' do
-        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: :physician } } }
+        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: 'physician' } } }
         run_test!
       end
 
@@ -120,42 +98,15 @@ RSpec.describe 'API Users', type: :request do
       response '422', 'entidade não processável' do
         let!(:user_record) { create(:user, :patient) }
         let(:id) { user_record.id }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: 1 }, Rails.application.secret_key_base)}" }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user_record.id }, Rails.application.secret_key_base)}" }
         let(:user) { { email: '' } }
         run_test!
       end
 
-      response '404', 'usuário não encontrado' do
+      response '401', 'access denied' do
         let(:id) { 0 }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: 1 }, Rails.application.secret_key_base)}" }
         let(:user) { { name: 'Nome Qualquer' } }
-        run_test!
-      end
-    end
-
-    delete 'Remove um usuário' do
-      tags 'Users'
-      security [ bearerAuth: [] ]
-
-      response '204', 'usuário removido' do
-        let!(:user_record) { create(:user, :patient) }
-        let!(:admin) { create(:admin) }
-        let(:id) { user_record.id }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
-        run_test!
-      end
-
-      response '404', 'usuário não encontrado' do
-        let!(:admin) { create(:admin) }
-        let(:id) { 0 }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
-        run_test!
-      end
-
-      response '401', 'remoção não autorizada' do
-        let!(:user_record) { create(:user, :patient) }
-        let(:id) { user_record.id }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: id }, Rails.application.secret_key_base)}" }
         run_test!
       end
     end

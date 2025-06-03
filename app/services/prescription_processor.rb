@@ -65,7 +65,7 @@ class PrescriptionProcessor
       medication: @medication
     }.select { |_k, v| v.nil? }.keys
 
-    return if missing.empty?
+    return false if missing.empty?
 
     raise ArgumentError, I18n.t('api.error.not_found', item: missing.join(', '))
   end
@@ -79,7 +79,7 @@ class PrescriptionProcessor
   end
 
   def authorized_user?
-    return if @current_user.in?([@physician, @patient])
+    return false if @current_user.in?([@physician, @patient])
 
     error(I18n.t('api.error.unauthorized'))
   end
@@ -87,10 +87,10 @@ class PrescriptionProcessor
   def action_type(new_quantity, old_quantity)
     action = determine_action(new_quantity, old_quantity)
     message = I18n.t("api.success.#{action}",
-                    substance: @medication.substance,
-                    time: @time,
-                    old: old_quantity.to_f,
-                    new: new_quantity.to_f)
+                     substance: @medication.substance,
+                     time: @time,
+                     old: old_quantity.to_f,
+                     new: new_quantity.to_f)
 
     [action, message]
   end
@@ -99,6 +99,7 @@ class PrescriptionProcessor
     return 'remove_medication' if new_quantity.zero?
     return 'reduce_dosis' if new_quantity < old_quantity
     return 'increase_dosis' if new_quantity > old_quantity
+
     'no_changes'
   end
 

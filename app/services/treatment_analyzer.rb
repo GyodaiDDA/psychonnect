@@ -18,7 +18,7 @@ class TreatmentAnalyzer
 
   def self.full_query
     Prescription.select(
-      <<~SQL
+      <<~SQL.squish
         *,
         ROW_NUMBER()#{' '}
         OVER(

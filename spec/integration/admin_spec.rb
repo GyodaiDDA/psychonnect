@@ -29,7 +29,7 @@ RSpec.describe 'API Admin', type: :request do
       let!(:user) { create(:user, :patient) }
       let(:id) { user.id }
 
-      response '200', 'role successfully updated' do
+      response '200', 'Role successfully updated' do
         let!(:admin) { create(:admin) }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
         let(:user_payload) { { user: { role: :physician } } }
@@ -61,6 +61,33 @@ RSpec.describe 'API Admin', type: :request do
           body = JSON.parse(response.body)
           expect(body['error']).to eq(I18n.t('api.error.forbidden'))
         end
+      end
+    end
+
+    delete 'Deletes an user' do
+      tags 'Admin'
+      security [ bearerAuth: [] ]
+
+      response '204', 'user successfully deleted' do
+        let!(:user_record) { create(:user, :patient) }
+        let!(:admin) { create(:admin) }
+        let(:id) { user_record.id }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
+        run_test!
+      end
+
+      response '404', 'user not found' do
+        let!(:admin) { create(:admin) }
+        let(:id) { 0 }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: admin.id }, Rails.application.secret_key_base)}" }
+        run_test!
+      end
+
+      response '403', 'not authorized' do
+        let!(:user_record) { create(:user, :patient) }
+        let(:id) { user_record.id }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: id }, Rails.application.secret_key_base)}" }
+        run_test!
       end
     end
   end

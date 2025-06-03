@@ -21,9 +21,9 @@ class User < ApplicationRecord
 
   # Auth and validation
   has_secure_password
-  validates :name, presence: true, on: :create
-  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, presence: true, on: :create
-  #validates :role, inclusion: { in: %[admin patient physician], message: '%<value>s is not a valid role' }
+  validates :name, :role, presence: true, on: :create
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, presence: true
+  validates :role, inclusion: { in: %w[admin patient physician blocked], message: I18n.t('api.error.invalid_role') }
 
   enum :role, patient: 0, physician: 1, blocked: 9, admin: 10
 end

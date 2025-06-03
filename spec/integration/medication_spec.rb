@@ -135,8 +135,21 @@ RSpec.describe 'API Medications', type: :request do
         run_test! do |response|
           expect(response.status).to eq(404)
           body = JSON.parse(response.body)
-          puts body
           expect(body['error']).to eq(I18n.t('api.error.not_found'))
+        end
+      end
+
+      response '422', 'Item already in the database' do
+        let!(:fst_medication_record) { create(:medication, substance: 'Dosaline', dosage: 100, measure: 'g') }
+        let!(:snd_medication_record) { create(:medication, substance: 'Dosaline', dosage: 75, measure: 'g') }
+        let(:id) { fst_medication_record.id }
+        let(:medication) { { dosage: 75 } }
+
+        run_test! do |response|
+          expect(response.status).to eq(422)
+          body = JSON.parse(response.body)
+          expect(body['details'].to_s).to include(I18n.t('api.error.uniqueness'))
+          expect(Medication.first.dosage).to eq(100)
         end
       end
     end
