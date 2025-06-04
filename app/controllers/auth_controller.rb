@@ -4,9 +4,10 @@ class AuthController < ApplicationController
     user = User.find_by(email: params[:email])
     if user&.authenticate(params[:password])
       token = encode_token({ user_id: user.id })
-      render json: { token: token, user: user.slice(:id, :name, :email, :role) }
+      data = { token: token, user: user.slice(:id, :name, :email, :role) }
+      render_api_success(:login_successful, data: data, status: :ok)
     else
-      render json: { error: 'Credenciais inválidas' }, status: :unauthorized
+      render_api_error(:invalid_credentials, status: :unauthorized)
     end
   end
 

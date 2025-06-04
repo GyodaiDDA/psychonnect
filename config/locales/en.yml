@@ -10,6 +10,7 @@ en:
   api:
     success:
       listed: ""
+      login_successful: "Login successful"
       item_found: "Operation completed"
       item_created: "Successfully created"
       item_updated: "Successfully updated"
@@ -19,7 +20,7 @@ en:
       increase_dosis: "Dose of %<substance>s at %<time>s increased from %<old>f to %<new>f."
       no_changes: "This dose was already prescribed at %<time>s."
     error:
-      not_found: "%<item>s not found"
+      not_found: "%{item} not found"
       unauthorized: "Access denied"
       invalid_credentials: "Invalid credentials"
       invalid_parameters: "Invalid parameters"

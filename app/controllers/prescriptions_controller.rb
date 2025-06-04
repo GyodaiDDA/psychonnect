@@ -1,12 +1,14 @@
 # Prescriptions CRUD
 class PrescriptionsController < ApplicationController
   before_action :authorize!
+  before_action :authorize_admin!, only: %i[destroy]
 
   def index
-    patient = User.find_by(id: params[:patient_id])
-    return render json: { error: 'Paciente não encontrado' }, status: :not_found unless patient
+    patient = User.find_by(id: params[:patient_id]) if params[:patient_id]
+    return render_api_error(:not_found, status: :not_found, item: :patient) unless patient
 
     medication = Medication.find_by(id: params[:medication_id])
+
     time = params[:time]
 
     prescriptions = TreatmentAnalyzer.current_treatment_for(patient, medication:, time:)
@@ -15,9 +17,10 @@ class PrescriptionsController < ApplicationController
 
   def history
     patient = User.find_by(id: params[:patient_id])
-    return render json: { error: 'Paciente não encontrado' }, status: :not_found unless patient
+    return render_api_error(:not_found, status: :not_found, item: :patient) unless patient
 
     medication = Medication.find_by(id: params[:medication_id])
+
     time = params[:time]
 
     prescriptions = TreatmentAnalyzer.history(patient, medication:, time:)
@@ -26,6 +29,8 @@ class PrescriptionsController < ApplicationController
 
   def show
     prescription = Prescription.find(params[:id])
+    return render_api_error(:not_found, status: :not_found, item: :prescription) unless prescription
+
     render json: prescription
   end
 
@@ -36,15 +41,19 @@ class PrescriptionsController < ApplicationController
 
   def update
     prescription = Prescription.find(params[:id])
+    return render_api_error(:not_found, status: :not_found, item: :prescription) unless prescription
+
     if prescription.update(prescription_params)
       render json: prescription
     else
-      render json: prescription.errors, status: :unprocessable_entity
+      render_api_error(:invalid_parameters, errors: prescription.errors.full_messages, status: :unprocessable_entity)
     end
   end
 
   def destroy
     prescription = Prescription.find(params[:id])
+    return render_api_error(:not_found, status: :not_found, item: :prescription) unless prescription
+
     prescription.destroy
     head :no_content
   end

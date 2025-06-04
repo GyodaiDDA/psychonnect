@@ -2,13 +2,19 @@
 class UsersController < ApplicationController
   before_action :authorize!, only: %i[show update]
 
+  def index
+    User.where(id: connected_users.presence)
+  end
+
   def show
-    user = if current_user.admin?
-             User.find(params[:id])
-           else
-             current_user
-           end
-    render json: user
+    user = User.find(params[:id])
+    return render_api_error(:not_found, status: :not_found, item: :user) unless user
+
+    if connected_users.include?(user.id) || current_user == user
+      render json: user
+    else
+      render_api_error(:unauthorized, status: :unauthorized)
+    end
   end
 
   def create
@@ -33,6 +39,12 @@ class UsersController < ApplicationController
   end
 
   private
+
+  def connected_users
+    return PhysicianPatient.where(physician_id: current_user.id).pluck(:patient_id) if current_user.physician?
+
+    PhysicianPatient.where(patient_id: current_user.id).pluck(:physician_id) if current_user.patient?
+  end
 
   def user_params
     params.expect(user: %i[name email password])

@@ -30,7 +30,7 @@ class PrescriptionProcessor
   end
 
   def determine_prescription_action
-    current_treatment = TreatmentAnalyzer.current_treatment_for(@patient, medication: @medication)
+    current_treatment = TreatmentAnalyzer.current_treatment_for(@patient, medication: @medication, time: @time)
 
     if current_treatment.empty?
       [:new_medication, I18n.t('api.success.item_created')]
@@ -79,7 +79,7 @@ class PrescriptionProcessor
   end
 
   def authorized_user?
-    return false if @current_user.in?([@physician, @patient])
+    return true if @current_user.in?([@physician, @patient])
 
     error(I18n.t('api.error.unauthorized'))
   end
@@ -89,7 +89,7 @@ class PrescriptionProcessor
     message = I18n.t("api.success.#{action}",
                      substance: @medication.substance,
                      time: @time,
-                     old: old_quantity.to_f,
+                     old: old_quantity.to_f || 0,
                      new: new_quantity.to_f)
 
     [action, message]

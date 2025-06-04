@@ -6,7 +6,7 @@ class MedicationsController < ApplicationController
 
   def show
     medication = Medication.find_by(id: params[:id])
-    return render_api_error(:not_found, status: :not_found) unless medication
+    return render_api_error(:not_found, status: :not_found, item: :medication) unless medication
 
     render_api_success(:item_found, data: medication)
   end
@@ -16,22 +16,24 @@ class MedicationsController < ApplicationController
     if medication.save
       render_api_success(:item_created, status: :created)
     else
-      render_api_error(:missing_parameters, errors: medication.errors.full_messages, status: :unprocessable_entity)
+      render_api_error(:invalid_parameters, errors: medication.errors.full_messages, status: :unprocessable_entity)
     end
   end
 
   def update
-    medication = Medication.find(params[:id])
+    medication = Medication.find_by(id: params[:id])
+    return render_api_error(:not_found, status: :not_found, item: :medication) unless medication
+
     if medication.update(medication_params)
       render_api_success(:item_updated, status: :ok)
     else
-      render_api_error(:unprocessable_entity, errors: medication.errors.full_messages, status: :unprocessable_entity)
+      render_api_error(:invalid_parameters, errors: medication.errors.full_messages, status: :unprocessable_entity)
     end
   end
 
   def destroy
-    medication = Medication.find(params[:id])
-    return render_api_error(:not_found, status: :not_found) unless medication
+    medication = Medication.find_by(id: params[:id])
+    return render_api_error(:not_found, status: :not_found, item: :medication) unless medication
 
     medication.destroy
     head :no_content

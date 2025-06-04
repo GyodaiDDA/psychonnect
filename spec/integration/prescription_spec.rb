@@ -2,8 +2,8 @@ require 'swagger_helper'
 
 RSpec.describe 'API Prescriptions', type: :request do
   path '/prescriptions' do
-    post 'Cria uma nova prescrição' do
-      tags 'Prescrições'
+    post 'Creates new prescription' do
+      tags 'Prescriptions'
       security [bearerAuth: []]
       consumes 'application/json'
       parameter name: :prescription, in: :body, schema: {
@@ -19,7 +19,7 @@ RSpec.describe 'API Prescriptions', type: :request do
         required: %w[patient_id physician_id current_user_id medication_id quantity time]
       }
 
-      response '201', 'prescrição criada com sucesso' do
+      response '201', 'prescription successfully created' do
         let(:patient) { create(:user, :patient) }
         let(:physician) { create(:user, :physician) }
         let(:medication) { create(:medication) }
@@ -39,7 +39,7 @@ RSpec.describe 'API Prescriptions', type: :request do
         run_test!
       end
 
-      response '422', 'retorna erro se a receita for inválida' do
+      response '422', 'invalid prescription' do
         let(:patient) { create(:user, :patient) }
         let(:physician) { create(:user, :physician) }
         let(:medication) { create(:medication) }
@@ -64,12 +64,12 @@ RSpec.describe 'API Prescriptions', type: :request do
   path '/prescriptions/{id}' do
     parameter name: :id, in: :path, type: :string
 
-    get 'Exibe uma prescrição específica' do
-      tags 'Prescrições'
+    get 'Shows a specific prescription' do
+      tags 'Prescriptions'
       security [bearerAuth: []]
       produces 'application/json'
 
-      response '200', 'prescrição encontrada' do
+      response '200', 'prescription found' do
         let!(:prescription) { create(:prescription) }
         let(:id) { prescription.id }
         let(:Authorization) do
@@ -78,7 +78,7 @@ RSpec.describe 'API Prescriptions', type: :request do
         run_test!
       end
 
-      response '404', 'prescrição não encontrada' do
+      response '404', 'prescription not found' do
         let(:id) { 0 }
         let!(:user) { create(:user, :patient) }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
@@ -86,8 +86,8 @@ RSpec.describe 'API Prescriptions', type: :request do
       end
     end
 
-    put 'Atualiza uma prescrição' do
-      tags 'Prescrições'
+    put 'Updates a prescription' do
+      tags 'Prescriptions'
       security [bearerAuth: []]
       consumes 'application/json'
       parameter name: :prescription, in: :body, schema: {
@@ -98,7 +98,7 @@ RSpec.describe 'API Prescriptions', type: :request do
         }
       }
 
-      response '200', 'prescrição atualizada' do
+      response '200', 'prescription updated' do
         let!(:prescription_record) { create(:prescription) }
         let(:id) { prescription_record.id }
         let(:Authorization) do
@@ -108,7 +108,7 @@ RSpec.describe 'API Prescriptions', type: :request do
         run_test!
       end
 
-      response '404', 'prescrição não encontrada' do
+      response '404', 'prescription not found' do
         let(:id) { 0 }
         let!(:user) { create(:user, :patient) }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
@@ -116,7 +116,7 @@ RSpec.describe 'API Prescriptions', type: :request do
         run_test!
       end
 
-      response '422', 'medicação inválida' do
+      response '422', 'invalid medication' do
         let!(:prescription_record) { create(:prescription) }
         let(:id) { prescription_record.id }
         let(:Authorization) do
@@ -127,23 +127,16 @@ RSpec.describe 'API Prescriptions', type: :request do
       end
     end
 
-    delete 'Remove uma prescrição' do
-      tags 'Prescrições'
+    delete 'Deletes a prescription' do
+      tags 'Prescriptions'
       security [bearerAuth: []]
 
-      response '204', 'prescrição removida' do
+      response '403', 'unauthorized' do
         let!(:prescription_record) { create(:prescription) }
         let(:id) { prescription_record.id }
         let(:Authorization) do
           "Bearer #{JWT.encode({ user_id: prescription_record.patient.id }, Rails.application.secret_key_base)}"
         end
-        run_test!
-      end
-
-      response '404', 'prescrição não encontrada' do
-        let(:id) { 0 }
-        let!(:user) { create(:user, :patient) }
-        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
         run_test!
       end
     end

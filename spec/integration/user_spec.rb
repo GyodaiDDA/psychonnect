@@ -23,8 +23,13 @@ RSpec.describe 'API Users', type: :request do
         required: ['user']
       }
 
-      response '201', 'user created' do
+      response '201', 'physician user created' do
         let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: 'physician' } } }
+        run_test!
+      end
+
+      response '201', 'patient user created' do
+        let!(:user) { { user: { name: 'Rodrigo', email: 'rodrigao@tenta.com', password: 'uLyt@2', role: 'patient' } } }
         run_test!
       end
 
@@ -53,21 +58,23 @@ RSpec.describe 'API Users', type: :request do
       security [ bearerAuth: [] ]
       produces 'application/json'
 
-      response '200', 'user found' do
+      response '200', 'user can see their own info' do
         let!(:user) { create(:user, :patient) }
         let(:id) { user.id }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
         run_test!
       end
 
-      response '200', 'returns current user for non-admin' do
+      response '200', 'user cannot see other user info' do
         let!(:user) { create(:user, :patient) }
-        let(:id) { 2 }
+        let!(:other_user) { create(:user, :physician) }
+        let(:id) { user.id }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
+        
         run_test!
       end
 
-      response '404', 'usuário não encontrado' do
+      response '404', 'user not found' do
         let!(:user) { create(:admin) }
         let(:id) { 0 }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
@@ -75,7 +82,7 @@ RSpec.describe 'API Users', type: :request do
       end
     end
 
-    put 'Atualiza um usuário' do
+    put 'Updates an user' do
       tags 'Users'
       security [ bearerAuth: [] ]
       consumes 'application/json'
@@ -87,7 +94,7 @@ RSpec.describe 'API Users', type: :request do
         }
       }
 
-      response '200', 'usuário atualizado' do
+      response '200', 'user updated' do
         let!(:user_record) { create(:user, :patient) }
         let(:id) { user_record.id }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user_record.id }, Rails.application.secret_key_base)}" }
@@ -95,7 +102,7 @@ RSpec.describe 'API Users', type: :request do
         run_test!
       end
 
-      response '422', 'entidade não processável' do
+      response '422', 'non processable entity' do
         let!(:user_record) { create(:user, :patient) }
         let(:id) { user_record.id }
         let(:Authorization) { "Bearer #{JWT.encode({ user_id: user_record.id }, Rails.application.secret_key_base)}" }

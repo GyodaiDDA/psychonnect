@@ -20,7 +20,7 @@ RSpec.describe TreatmentAnalyzer do
   end
 
   describe '.current_treatment_for' do
-    it 'retorna apenas as prescrições com quantity > 0 e mais recentes' do
+    it 'returns prescriptions with > 0 quantities' do
       result = described_class.current_treatment_for(patient)
 
       expect(result).to all(be_a(Prescription))
@@ -31,17 +31,17 @@ RSpec.describe TreatmentAnalyzer do
       expect(result.map(&:time)).to include('20:00')
     end
 
-    it 'filtra corretamente por medicação' do
+    it 'filtered by medication' do
       result = described_class.current_treatment_for(patient, medication: fst_medication)
       expect(result.map(&:medication_id).uniq).to eq([fst_medication.id])
     end
 
-    it 'filtra corretamente por horário' do
+    it 'filtra by time of the day' do
       result = described_class.current_treatment_for(patient, time: '10:00')
       expect(result.map(&:time).uniq).to eq(['10:00'])
     end
 
-    it 'mostra a quantidade atualizada para o horário' do
+    it 'returns the updated quantity for that time of the day' do
       result = described_class.current_treatment_for(patient, medication: fst_medication, time: '10:00')
       expect(result.map(&:quantity).uniq).to eq([1])
     end

@@ -97,7 +97,7 @@ RSpec.describe 'API Medications', type: :request do
         run_test! do |response|
           expect(response.status).to eq(404)
           body = JSON.parse(response.body)
-          expect(body['error']).to eq(I18n.t('api.error.not_found'))
+          expect(body['error']).to eq(I18n.t('api.error.not_found', item: 'medication'))
         end
       end
     end
@@ -135,7 +135,7 @@ RSpec.describe 'API Medications', type: :request do
         run_test! do |response|
           expect(response.status).to eq(404)
           body = JSON.parse(response.body)
-          expect(body['error']).to eq(I18n.t('api.error.not_found'))
+          expect(body['error']).to eq('medication not found')
         end
       end
 
@@ -174,7 +174,7 @@ RSpec.describe 'API Medications', type: :request do
         run_test! do |response|
           expect(response.status).to eq(404)
           body = JSON.parse(response.body)
-          expect(body['error']).to eq(I18n.t('api.error.not_found'))
+          expect(body['error']).to eq('medication not found')
         end
       end
     end

@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   mount Rswag::Api::Engine => '/api-docs'
 
   # Endpoints using resources
-  resources :users, only: %i[show create update]
+  resources :users, only: %i[index show create update]
   resources :medications
   resources :prescriptions
   namespace :admin do

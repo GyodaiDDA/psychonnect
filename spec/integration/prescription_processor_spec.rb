@@ -43,7 +43,7 @@ RSpec.describe PrescriptionProcessor do
         create(:prescription, patient:, physician:, medication:, quantity: 2, time: '10:00')
       end
 
-      it 'retorns :reduce_dosis' do
+      it 'returns :reduce_dosis' do
         result = described_class.call(valid_params.merge(quantity: 1), physician)
         expect(result[:message]).to include('reduced')
       end
@@ -54,7 +54,7 @@ RSpec.describe PrescriptionProcessor do
         create(:prescription, patient:, physician:, medication:, quantity: 2, time: '10:00')
       end
 
-      it 'retorns :no_changes' do
+      it 'returns :no_changes' do
         result = described_class.call(valid_params.merge(quantity: 2), physician)
         expect(result[:message]).to include('already prescribed')
       end
@@ -65,7 +65,7 @@ RSpec.describe PrescriptionProcessor do
         create(:prescription, patient:, physician:, medication:, quantity: 1, time: '10:00')
       end
 
-      it 'retorns :remove_medication' do
+      it 'returns :remove_medication' do
         result = described_class.call(valid_params.merge(quantity: 0), physician)
         expect(result[:message]).to include('removed')
       end
