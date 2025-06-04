@@ -1,21 +1,17 @@
 # 🧠 Psychonnect
 
-**Psychonnect** is a RESTful API developed in Ruby on Rails for managing psychiatric treatment, allowing control of medical prescriptions, patients, doctors and medications.
+Psychonnect is a Ruby on Rails API for managing psychiatric treatments. It allows doctors to prescribe medications to patients while keeping track of dose changes and treatment history.
 
 ---
 
 ## ✨ Features
 
-- Create, list, edit and delete **medications**
-- Create **medical prescriptions**, with logic of:
-  - Detect dose changes
-  - History by time and substance
-  - Automatic relationship between doctor and patient when prescribing
-- History and current treatment by patient
-- Register **users** with roles: `admin`, `physician` and `patient`
-- Authentication with **JWT**
-- **Role-based authorization**
-- **Test coverage with RSpec and Rswag**
+- CRUD for **medications**
+- Create and update **prescriptions** with dose change detection
+- Patient treatment history and current regimen
+- User management with roles: `admin`, `physician` and `patient`
+- JWT based authentication and role authorization
+- RSpec test suite with Swagger documentation
 
 ---
 
@@ -32,93 +28,83 @@
 
 ## 🔧 Installation
 
-1. Clone the repository:
+1. Clone the repository and enter the folder
 
-```
+```bash
 git clone https://github.com/your-user/psychonnect.git
 cd psychonnect
 ```
 
-2. *First option* is to simply run the setup.sh file:
+2. Copy the environment file and install dependencies
 
-```
-./setup.sh
-```
-
-2. *Alternatively*, follow these steps:
-
-```
+```bash
+cp env.example .env
 bundle install
-cp .env.example .env
-bin/rails db:create db:migrate db:seed
+```
+
+3. Prepare the database and start the server
+
+```bash
+bin/rails db:create db:migrate
 bin/rails server
 ```
 
+You can also run `./setup.sh` to perform all the steps above automatically.
+
+---
 
 ## 🛡️ Authentication
-Create an user, sending `name`, `email`, and `password` to
 
-```POST /users```
+Create an account by sending `name`, `email` and `password` to **POST `/users`**. Then obtain a token with your credentials:
 
-Log in by sending your email and password to
+```bash
+POST /login
+{
+  "email": "user@example.com",
+  "password": "secret"
+}
+```
 
-```POST /auth/login```
+Use the token in subsequent requests:
 
-Receive a JWT token
+```
+Authorization: Bearer <token>
+```
 
-Send this token in the header:
+---
 
-Authorization: Bearer <your_token>
+## 📬 Main Endpoints
 
-📬 Main endpoints
-bash
-Always show details
+- `POST /login` – obtain authentication token
+- `GET /users` – list users (admin only)
+- `PATCH /users/:id/role` – change user role (admin only)
+- `GET /medications` – list medications
+- `POST /medications` – create medication
+- `POST /prescriptions` – create prescription
+- `GET /prescriptions` – list current treatment
+- `GET /prescriptions/history/:patient_id` – treatment history
 
-Copy
-POST /auth/login # Login with email and password
-GET /users # List (admin only)
+See [docs/API.md](docs/API.md) for full endpoint documentation.
 
-PATCH /users/:id/role # Role change (admin only)
+---
 
-GET /medications # List medications
-POST /medications # Create medication
-PUT /medications/:id # Update medication
-DELETE /medications/:id # Remove medication
+## 🧪 Tests
 
-POST /prescriptions # Create prescription
-GET /prescriptions # List current treatment
-GET /prescriptions/history/:id # Patient history
-🧪 Tests
-Run the test suite:
+Run the test suite with:
 
-bash
-Always show details
-
-Copy
+```bash
 bin/rspec
-100% guaranteed coverage™ 🧼
+```
 
-📄 Swagger documentation
-After running the server, access:
+---
 
-bash
-Always show details
+## 📄 Swagger
 
-Copy
-http://localhost:3000/api-docs
-📌 ALL future
-Web interface (React or Vue)
+After running the server, access [`http://localhost:3000/api-docs`](http://localhost:3000/api-docs) to view the interactive Swagger documentation.
 
-Side Effect Tracking
+---
 
-Medication Notifications and Reminders
+## 👨‍⚕️ Developed by
 
-Treatment Charts and Reports
-
-👨‍⚕️ Developed by
 Rodrigo (a.k.a. Gyodai)
-More than a dev: a Rails warrior with a plan.
 
-🧠 Project Philosophy
-"The madness you have may be exactly what the world needs."
-""
