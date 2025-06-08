@@ -130,6 +130,23 @@ RSpec.describe 'API Prescriptions', type: :request do
     delete 'Deletes a prescription' do
       tags 'Prescriptions'
       security [bearerAuth: []]
+      
+      response '204', 'prescription deleted by admin' do
+        let!(:prescription_record) { create(:prescription) }
+        let(:id) { prescription_record.id }
+        let(:user) { create(:admin) }
+        let(:Authorization) do
+          "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}"
+        end
+        run_test!
+      end
+
+      response '404', 'prescription not found' do
+        let(:id) { 9999 }
+        let!(:user) { create(:admin) }
+        let(:Authorization) { "Bearer #{JWT.encode({ user_id: user.id }, Rails.application.secret_key_base)}" }
+        run_test!
+      end
 
       response '403', 'unauthorized' do
         let!(:prescription_record) { create(:prescription) }

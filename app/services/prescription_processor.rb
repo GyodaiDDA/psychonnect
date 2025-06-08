@@ -89,7 +89,7 @@ class PrescriptionProcessor
     message = I18n.t("api.success.#{action}",
                      substance: @medication.substance,
                      time: @time,
-                     old: old_quantity.to_f || 0,
+                     old: old_quantity.to_f,
                      new: new_quantity.to_f)
 
     [action, message]

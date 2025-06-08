@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
+ruby '>= 3.4.1'
 gem 'rails', '~> 8.0.1'
 
 # Encryptation
@@ -12,8 +12,8 @@ gem 'rails-i18n'
 # Access tokens
 gem 'jwt', '~> 2.10'
 
-# Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem 'kamal', require: false
+# Requirement for rswag
+gem 'ostruct'
 
 # Use postgres as the database for Active Record
 gem 'pg', '~> 1.5'

@@ -14,6 +14,6 @@ class AuthController < ApplicationController
   private
 
   def encode_token(payload)
-    JWT.encode(payload, ENV.fetch('SECRET_KEY_BASE'), 'HS256')
+    JWT.encode(payload, Rails.application.secret_key_base, 'HS256')
   end
 end
