@@ -6,11 +6,11 @@ gem 'rails', '~> 8.0.1'
 # Encryptation
 gem 'bcrypt', '~> 3.1'
 
-# Localization and message stardards
-gem 'rails-i18n'
-
 # Access tokens
 gem 'jwt', '~> 2.10'
+
+# Deployment
+gem 'kamal'
 
 # Requirement for rswag
 gem 'ostruct'
@@ -23,6 +23,9 @@ gem 'puma', '>= 5.0'
 
 # Using CORS
 gem 'rack-cors'
+
+# Localization and message stardards
+gem 'rails-i18n'
 
 # Use the database-backed adapters for Rails.cache and Active Job
 gem 'solid_cache'
