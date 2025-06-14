@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '>= 3.4.4'
+ruby '>= 3.4.1'
 gem 'rails', '~> 8.0.1'
 
 # Encryptation
@@ -20,6 +20,9 @@ gem 'pg', '~> 1.5'
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem 'puma', '>= 5.0'
+
+# Dependency GEM
+gem 'psych', '~> 5.1.0'
 
 # Using CORS
 gem 'rack-cors'

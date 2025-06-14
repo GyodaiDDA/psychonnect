@@ -33,3 +33,7 @@
 
 # Ignore coverage reports
 /coverage*
+
+# Ignore kamal folder
+/.kamal
+/.kamal/*

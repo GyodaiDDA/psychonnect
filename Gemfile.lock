@@ -186,8 +186,7 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.4.0)
-    psych (5.2.6)
-      date
+    psych (5.1.2)
       stringio
     public_suffix (6.0.2)
     puma (6.6.0)
@@ -373,6 +372,7 @@ DEPENDENCIES
   kamal
   ostruct
   pg (~> 1.5)
+  psych (~> 5.1.0)
   puma (>= 5.0)
   rack-cors
   rails (~> 8.0.1)
@@ -390,7 +390,7 @@ DEPENDENCIES
   tzinfo-data
 
 RUBY VERSION
-   ruby 3.4.4p34
+   ruby 3.4.1
 
 BUNDLED WITH
-   2.6.7
+   2.6.9

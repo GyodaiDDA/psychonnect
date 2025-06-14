@@ -1,66 +1,70 @@
 # syntax=docker/dockerfile:1
-# check=error=true
 
-# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t psychonnect .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name psychonnect psychonnect
+# Multi-stage build: build gems and assets, then produce lean runtime image
+ARG RUBY_VERSION=3.4.1
 
-# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
-
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.4.4
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
-
-# Rails app lives here
+# ---- Build Stage ----
+FROM docker.io/library/ruby:${RUBY_VERSION}-slim AS build
 WORKDIR /rails
 
-# Install base packages
+# Install build dependencies and libraries for native extensions
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libpq5 postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    apt-get install --no-install-recommends -y \
+      build-essential \
+      libpq-dev \
+      libyaml-dev \
+      git \
+      curl \
+      pkg-config \
+      tzdata \
+      libssl-dev \
+      zlib1g-dev \
+      libxml2-dev \
+      libxslt1-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set production environment
-ENV RAILS_ENV="production" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development:test"
+# Configure Bundler and psych before installation
+RUN bundle config set force_ruby_platform true && \
+    bundle config build.psych --with-ldflags=-lyaml
 
-# Throw-away build stage to reduce size of final image
-FROM base AS build
+# Install Bundler explicitly to match your lockfile
+RUN gem install bundler --no-document
 
-# Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y libpq-dev build-essential git pkg-config && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
-
-# Install application gems
+# Copy and install gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git
+ENV BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_DEPLOYMENT=1 \
+    BUNDLE_WITHOUT="development test"
+RUN gem install psych -v 5.1.0 && \
+    bundle _$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1 | tr -d ' ')_ install --jobs 2 --retry 3
 
-# Copy application code
+# Copy application code and precompile assets
 COPY . .
+# RUN RAILS_ENV=production bundle exec rake assets:precompile
 
+# ---- Runtime Stage ----
+FROM docker.io/library/ruby:${RUBY_VERSION}-slim
+WORKDIR /rails
 
+# Install runtime dependencies (no build tools)
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y \
+      libpq5 \
+      postgresql-client \
+      tzdata && \
+    rm -rf /var/lib/apt/lists/*
 
-
-# Final stage for app image
-FROM base
-
-# Copy built artifacts: gems, application
-COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
+# Copy installed gems and app code from build stage
+COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
 
-# Run and own only the runtime files as a non-root user for security
+# Create non-root user
 RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER 1000:1000
+    useradd --system --uid 1000 --gid rails --shell /bin/bash --create-home rails && \
+    chown -R rails:rails /rails
+USER rails
 
-# Entrypoint prepares the database.
+# Entrypoint and default command
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-HEALTHCHECK CMD curl -f http://localhost/up || exit 1
-
-# Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
