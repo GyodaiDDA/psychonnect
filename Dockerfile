@@ -57,6 +57,9 @@ RUN apt-get update -qq && \
 # Copy installed gems and app code from build stage
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
+ENV BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_DEPLOYMENT=1 \
+    BUNDLE_WITHOUT="development test"
 
 # Create non-root user
 RUN groupadd --system --gid 1000 rails && \
