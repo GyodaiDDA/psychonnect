@@ -40,32 +40,30 @@ gem 'thruster', require: false
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[windows jruby]
 
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'
+# See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+gem 'debug', platforms: %i[mri windows], require: 'debug/prelude'
 
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem 'brakeman', require: false
+# Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+gem 'brakeman', require: false
 
-  # Loads enviroment variables
-  gem 'dotenv'
+# Loads enviroment variables
+gem 'dotenv'
 
-  # FactoryBot and Faker help creating objects for testing
-  gem 'factory_bot_rails'
-  gem 'faker', '~> 3.5'
+# Rubocop plugins
+gem 'rubocop-factory_bot', require: false
+gem 'rubocop-rails', require: false
+gem 'rubocop-rspec', require: false
+gem 'rubocop-rspec_rails', require: false
 
-  # rspec for automated testing
-  gem 'rspec-rails'
+# FactoryBot and Faker help creating objects for testing
+gem 'factory_bot_rails'
+gem 'faker', '~> 3.5'
 
-  # rswag for testing
-  gem 'rswag'
+# rspec for automated testing
+gem 'rspec-rails'
 
-  # Rubocop plugins
-  gem 'rubocop-factory_bot', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rspec', require: false
-  gem 'rubocop-rspec_rails', require: false
+# rswag for testing
+gem 'rswag'
 
-  # checking for test coverage
-  gem 'simplecov', require: false
-end
+# checking for test coverage
+gem 'simplecov', require: false

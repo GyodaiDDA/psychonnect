@@ -33,8 +33,7 @@ RUN gem install bundler --no-document
 # Copy and install gems
 COPY Gemfile Gemfile.lock ./
 ENV BUNDLE_PATH=/usr/local/bundle \
-    BUNDLE_DEPLOYMENT=1 \
-    BUNDLE_WITHOUT="development test"
+    BUNDLE_DEPLOYMENT=1
 RUN gem install psych -v 5.1.0 && \
     bundle _$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1 | tr -d ' ')_ install --jobs 2 --retry 3
 
@@ -57,6 +56,8 @@ RUN apt-get update -qq && \
 # Copy installed gems and app code from build stage
 COPY --from=build /usr/local/bundle /usr/local/bundle
 COPY --from=build /rails /rails
+ENV BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_DEPLOYMENT=1
 
 # Create non-root user
 RUN groupadd --system --gid 1000 rails && \
