@@ -35,7 +35,7 @@ COPY Gemfile Gemfile.lock ./
 ENV BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_DEPLOYMENT=1
 RUN gem install psych -v 5.1.0 && \
-    bundle _$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1 | tr -d ' ')_ install --jobs 2 --retry 3
+    bundle _$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1 | tr -d ' ')_ install --jobs 2 --retry 1
 
 # Copy application code and precompile assets
 COPY . .

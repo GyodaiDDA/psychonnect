@@ -1,10 +1,10 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  username: <%= ENV["PSYCHONNECT_DATABASE_USERNAME"] %>
-  password: <%= ENV["PSYCHONNECT_DATABASE_PASSWORD"] %>
+  username: postgres
+  password: password
   host: localhost
-  pool: 5
+  pool: 10
 
 development:
   <<: *default
@@ -16,6 +16,8 @@ test:
 
 production:
   <<: *default
-  database: psychonnect_production
-  username: psychonnect
-  password: <%= ENV["PSYCHONNECT_DATABASE_PASSWORD"] %>
+  host: <%= ENV.fetch("DATABASE_HOST") %>
+  database: <%= ENV.fetch("POSTGRES_DATABASE") %>
+  username: <%= ENV.fetch("POSTGRES_USERNAME") %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD") %>
+  port: 5432
