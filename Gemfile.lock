@@ -190,7 +190,8 @@ GEM
       prettyprint
     prettyprint (0.2.0)
     prism (1.4.0)
-    psych (5.1.2)
+    psych (5.2.6)
+      date
       stringio
     public_suffix (6.0.2)
     puma (6.6.0)
@@ -377,7 +378,7 @@ DEPENDENCIES
   kamal
   ostruct
   pg (~> 1.5)
-  psych (~> 5.1.0)
+  psych (~> 5.2.6)
   puma (>= 5.0)
   rack-cors
   rails (~> 8.0.1)
