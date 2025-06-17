@@ -22,7 +22,6 @@ gem 'pg', '~> 1.5'
 gem 'puma', '>= 5.0'
 
 # Dependency GEM
-gem 'psych', '~> 5.1.0'
 
 # Using CORS
 gem 'rack-cors'

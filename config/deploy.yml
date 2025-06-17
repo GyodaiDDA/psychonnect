@@ -16,9 +16,9 @@ builder:
 
 env:
   clear:
-    DB_HOST: psychonnect-postgres
-    POSTGRES_USER: psychonnect
-    POSTGRES_DB: psychonnect_production
+    DATABASE_HOST: psychonnect-postgres
+    POSTGRES_USERNAME: psychonnect
+    POSTGRES_DATABASE: psychonnect_production
     RAILS_ENV: production
   secret:
     - RAILS_MASTER_KEY
@@ -28,6 +28,7 @@ accessories:
   postgres:
     image: postgres:15
     host: do-droplet-1
+    port: 5432
     directories:
       - data:/var/lib/postgresql/data
     env:
