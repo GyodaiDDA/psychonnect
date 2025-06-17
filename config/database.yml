@@ -15,9 +15,20 @@ test:
   database: psychonnect_test
 
 production:
-  <<: *default
-  host: <%= ENV.fetch("DATABASE_HOST") %>
-  database: <%= ENV.fetch("POSTGRES_DATABASE") %>
-  username: <%= ENV.fetch("POSTGRES_USERNAME") %>
-  password: <%= ENV.fetch("POSTGRES_PASSWORD") %>
-  port: 5432
+  primary: &primary
+    <<: *default
+    host: <%= ENV.fetch("DATABASE_HOST") %>
+    database: psychonnect_production
+    username: <%= ENV.fetch("POSTGRES_USERNAME") %>
+    password: <%= ENV.fetch("POSTGRES_PASSWORD") %>
+    port: 5432
+
+  cache:
+    <<: *primary
+    database: psychonnect_production_cache
+
+  queue:
+    <<: *primary
+
+  cable:
+    <<: *primary
