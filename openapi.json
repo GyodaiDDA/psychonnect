@@ -6,8 +6,8 @@
     },
     "servers": [
       {
-        "url": "#{ENV.fetch('SWAGGER_SCHEME', 'http')}://#{ENV.fetch('SWAGGER_HOST', 'localhost:3000')}",
-        "description": "Default server"
+        "url": "#{ENV.fetch('SWAGGER_SCHEME')}://#{ENV.fetch('SWAGGER_HOST')}",
+        "description": "Default server 1"
       }
     ],
     "paths": {
