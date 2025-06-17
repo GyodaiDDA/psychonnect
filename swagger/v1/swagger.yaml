@@ -437,4 +437,4 @@ servers:
     scheme:
       default: http
     defaultHost:
-      default: localhost
+      default: localhost:3000
