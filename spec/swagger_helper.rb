@@ -33,15 +33,18 @@ RSpec.configure do |config|
       security: [bearerAuth: []],
       paths: {},
       servers: [
-        {
-          url: 'https://{defaultHost}',
-          variables: {
-            defaultHost: {
-              default: 'localhost:3000'
-            }
+      {
+        url: "{scheme}://{defaultHost}",
+        variables: {
+          scheme: {
+            default: ENV.fetch('SWAGGER_SCHEME')
+          },
+          defaultHost: {
+            default: ENV.fetch('SWAGGER_HOST')
           }
         }
-      ]
+      }
+    ]
     }
   }
 

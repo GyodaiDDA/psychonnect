@@ -12,6 +12,64 @@ components:
 security:
 - bearerAuth: []
 paths:
+  "/admin/users/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: user_payload
+      in: body
+      schema:
+        type: object
+        properties:
+          user:
+            type: object
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+                format: password
+              role:
+                type: integer
+                enum:
+                - patient: 0
+                  physician: 1
+                  blocked: 9
+                  admin: 10
+        required:
+        - user
+    patch:
+      summary: Changes an user role
+      tags:
+      - Admin
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: Role successfully updated
+        '401':
+          description: Not authorized
+        '403':
+          description: User is not admin
+    delete:
+      summary: Deletes an user
+      tags:
+      - Admin
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: user successfully deleted
+        '404':
+          description: user not found
+        '403':
+          description: not authorized
   "/login":
     post:
       summary: Login do usuário
@@ -21,9 +79,9 @@ paths:
       parameters: []
       responses:
         '200':
-          description: login bem-sucedido
+          description: login successful
         '401':
-          description: usuário não existe
+          description: user does not exist
       requestBody:
         content:
           application/json:
@@ -103,6 +161,8 @@ paths:
           description: Medication successfully updated
         '404':
           description: Medication not found
+        '422':
+          description: Item already in the database
       requestBody:
         content:
           application/json:
@@ -127,9 +187,9 @@ paths:
           description: Medication not found
   "/prescriptions":
     get:
-      summary: Consulta o tratamento atual
+      summary: Consults current treatment
       tags:
-      - Prescrições
+      - Prescriptions
       security:
       - bearerAuth: []
       parameters:
@@ -150,21 +210,21 @@ paths:
           type: string
       responses:
         '200':
-          description: tratamento atual retornado
+          description: returns current treament
         '404':
-          description: paciente não encontrado
+          description: patient not found
     post:
-      summary: Cria uma nova prescrição
+      summary: Creates new prescription
       tags:
-      - Prescrições
+      - Prescriptions
       security:
       - bearerAuth: []
       parameters: []
       responses:
         '201':
-          description: prescrição criada com sucesso
+          description: prescription successfully created
         '422':
-          description: retorna erro se a receita for inválida
+          description: invalid prescription
       requestBody:
         content:
           application/json:
@@ -192,9 +252,9 @@ paths:
               - time
   "/prescriptions/history/{patient_id}":
     get:
-      summary: Consulta o histórico de tratamento
+      summary: Consults treatment history
       tags:
-      - Prescrições
+      - Prescriptions
       security:
       - bearerAuth: []
       parameters:
@@ -215,9 +275,9 @@ paths:
           type: string
       responses:
         '200':
-          description: histórico filtrado por horário
+          description: time treatment history
         '404':
-          description: paciente não encontrado
+          description: patient not found
   "/prescriptions/{id}":
     parameters:
     - name: id
@@ -226,30 +286,30 @@ paths:
       schema:
         type: string
     get:
-      summary: Exibe uma prescrição específica
+      summary: Shows a specific prescription
       tags:
-      - Prescrições
+      - Prescriptions
       security:
       - bearerAuth: []
       responses:
         '200':
-          description: prescrição encontrada
+          description: prescription found
         '404':
-          description: prescrição não encontrada
+          description: prescription not found
     put:
-      summary: Atualiza uma prescrição
+      summary: Updates a prescription
       tags:
-      - Prescrições
+      - Prescriptions
       security:
       - bearerAuth: []
       parameters: []
       responses:
         '200':
-          description: prescrição atualizada
+          description: prescription updated
         '404':
-          description: prescrição não encontrada
+          description: prescription not found
         '422':
-          description: medicação inválida
+          description: invalid medication
       requestBody:
         content:
           application/json:
@@ -261,82 +321,42 @@ paths:
                 time:
                   type: string
     delete:
-      summary: Remove uma prescrição
+      summary: Deletes a prescription
       tags:
-      - Prescrições
+      - Prescriptions
       security:
       - bearerAuth: []
       responses:
         '204':
-          description: prescrição removida
+          description: prescription deleted by admin
         '404':
-          description: prescrição não encontrada
+          description: prescription not found
+        '403':
+          description: unauthorized
   "/secret":
     get:
-      summary: Endpoint protegido
+      summary: protected endpoint
       tags:
       - Auth
       security:
       - bearerAuth: []
       responses:
         '200':
-          description: acesso permitido
+          description: access granted
         '401':
-          description: Usuário não existe (ActiveRecord::RecordNotFound)
-  "/users/{id}/role":
-    parameters:
-    - name: id
-      in: path
-      required: true
-      schema:
-        type: string
-    patch:
-      summary: Atualiza o papel de um usuário
-      tags:
-      - Usuários
-      security:
-      - bearerAuth: []
-      parameters:
-      - name: role
-        in: query
-        enum:
-        - patient
-        - physician
-        - admin
-        required: true
-        schema:
-          type: string
-        description: ":\n * `patient` \n * `physician` \n * `admin` \n "
-      responses:
-        '200':
-          description: role atualizado com sucesso
-        '401':
-          description: usuário não é admin
-        '422':
-          description: role inválido
+          description: User not found (ActiveRecord::RecordNotFound)
   "/users":
-    get:
-      summary: Lista todos os usuários
-      tags:
-      - Usuários
-      security:
-      - bearerAuth: []
-      responses:
-        '200':
-          description: usuários listados
-        '401':
-          description: sem token
     post:
-      summary: Cria um novo usuário
+      summary: Creates new user
       tags:
-      - Usuários
+      - Users
       security: []
       parameters: []
       responses:
         '201':
-          description: usuário criado
+          description: patient user created
         '422':
-          description: usuário admin não criado
+          description: user with role admin not created
       requestBody:
         content:
           application/json:
@@ -376,30 +396,30 @@ paths:
       schema:
         type: string
     get:
-      summary: Busca um usuário específico
+      summary: Finds a specific user
       tags:
-      - Usuários
+      - Users
       security:
       - bearerAuth: []
       responses:
         '200':
-          description: busca retorna usuário atual
+          description: user cannot see other user info
         '404':
-          description: usuário não encontrado
+          description: user not found
     put:
-      summary: Atualiza um usuário
+      summary: Updates an user
       tags:
-      - Usuários
+      - Users
       security:
       - bearerAuth: []
       parameters: []
       responses:
         '200':
-          description: usuário atualizado
+          description: user updated
         '422':
-          description: entidade não processável
-        '404':
-          description: usuário não encontrado
+          description: non processable entity
+        '401':
+          description: access denied
       requestBody:
         content:
           application/json:
@@ -411,21 +431,10 @@ paths:
                 email:
                   type: string
                   format: email
-    delete:
-      summary: Remove um usuário
-      tags:
-      - Usuários
-      security:
-      - bearerAuth: []
-      responses:
-        '204':
-          description: usuário removido
-        '404':
-          description: usuário não encontrado
-        '401':
-          description: remoção não autorizada
 servers:
-- url: http://{defaultHost}
+- url: "{scheme}://{defaultHost}"
   variables:
+    scheme:
+      default: http
     defaultHost:
-      default: localhost:3000
+      default: localhost

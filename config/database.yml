@@ -1,10 +1,15 @@
+# config/database.yml
+
 default: &default
   adapter: postgresql
   encoding: unicode
-  username: postgres
-  password: password
-  host: localhost
   pool: 10
+  host: <%= ENV.fetch("DB_HOST", "localhost") %>
+  username: <%= ENV.fetch("POSTGRES_USERNAME", "postgres") %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
+  port: 5432
+
+# --- ENVIRONMENTS ------------------------------------------------------
 
 development:
   <<: *default
@@ -15,20 +20,15 @@ test:
   database: psychonnect_test
 
 production:
-  primary: &primary
+  # Primary (writes/reads)
+  primary: &primary_production
     <<: *default
-    host: <%= ENV.fetch("DATABASE_HOST") %>
-    database: psychonnect_production
-    username: <%= ENV.fetch("POSTGRES_USERNAME") %>
-    password: <%= ENV.fetch("POSTGRES_PASSWORD") %>
-    port: 5432
+    database: <%= ENV.fetch("POSTGRES_DATABASE", "psychonnect_production") %>
 
+  # Solid Trifecta connections — point to the same DB for now
   cache:
-    <<: *primary
-    database: psychonnect_production_cache
-
+    <<: *primary_production
   queue:
-    <<: *primary
-
+    <<: *primary_production
   cable:
-    <<: *primary
+    <<: *primary_production

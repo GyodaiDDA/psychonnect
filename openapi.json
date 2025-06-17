@@ -5,7 +5,10 @@
       "version":"1.0"
     },
     "servers": [
-      {"url":"https://localhost/"}
+      {
+        "url": "#{ENV.fetch('SWAGGER_SCHEME', 'http')}://#{ENV.fetch('SWAGGER_HOST', 'localhost:3000')}",
+        "description": "Default server"
+      }
     ],
     "paths": {
     }

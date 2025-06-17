@@ -20,6 +20,8 @@ env:
     POSTGRES_USERNAME: psychonnect
     POSTGRES_DATABASE: psychonnect_production
     RAILS_ENV: production
+    SWAGGER_HOST: 167.99.9.143
+    SWAGGER_SCHEME: https
   secret:
     - RAILS_MASTER_KEY
     - POSTGRES_PASSWORD
