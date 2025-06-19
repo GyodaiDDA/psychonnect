@@ -2,7 +2,7 @@
 
 echo "🔧 starting Psychonnect setup..."
 
-REQUIRED_RUBY="3.4.1"
+REQUIRED_RUBY="3.4.4"
 CURRENT_RUBY=$(ruby -v | cut -d " " -f2 | cut -dp -f1)
 
 # 1. Ruby
