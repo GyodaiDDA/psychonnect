@@ -5,8 +5,12 @@ servers:
   web:
     - do-droplet-1
 
+proxy:
+  ssl: true
+  host: app.example.com
+
 registry:
-  server: docker.io
+  # server: docker.io
   username: gyodai
   password:
     - KAMAL_REGISTRY_PASSWORD
@@ -20,7 +24,7 @@ env:
     POSTGRES_USERNAME: psychonnect
     POSTGRES_DATABASE: psychonnect_production
     RAILS_ENV: production
-    SWAGGER_HOST: 167.99.9.143:80
+    SWAGGER_HOST: 167.99.9.143:443
     SWAGGER_SCHEME: https
   secret:
     - RAILS_MASTER_KEY
