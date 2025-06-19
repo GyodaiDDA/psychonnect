@@ -35,5 +35,5 @@
 /coverage*
 
 # Ignore kamal folder
-/.kamal
-/.kamal/*
+.kamal
+.kamal/*
