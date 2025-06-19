@@ -29,7 +29,7 @@ production:
   # Primary (writes/reads)
   primary: &primary_production
     <<: *default
-    database: <%= ENV.fetch("POSTGRES_DATABASE", "psychonnect_production") %>
+    database: psychonnect_production
 
   # Solid Trifecta connections — point to the same DB for now
   cache:
