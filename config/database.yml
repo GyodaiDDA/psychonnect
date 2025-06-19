@@ -14,10 +14,16 @@ default: &default
 development:
   <<: *default
   database: psychonnect_dev
+  host: localhost
+  username: psychonnect
+  password: password
 
 test:
   <<: *default
   database: psychonnect_test
+  host: localhost
+  username: psychonnect
+  password: password
 
 production:
   # Primary (writes/reads)
