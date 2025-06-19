@@ -7,7 +7,7 @@ gem 'rails', '~> 8.0.1'
 gem 'bcrypt', '~> 3.1'
 
 # Access tokens
-gem 'jwt', '~> 2.10'
+gem 'jwt', '~> 3.0'
 
 # Deployment
 gem 'kamal'
