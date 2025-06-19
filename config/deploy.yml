@@ -34,11 +34,12 @@ accessories:
   postgres:
     image: postgres:15
     host: do-droplet-1
-    port: 5432
+    port: 16
     directories:
       - data:/var/lib/postgresql/data
     env:
       clear:
+        DATABASE_HOST: psychonnect-postgres
         POSTGRES_USER: psychonnect
         POSTGRES_DATABASE: psychonnect_production
       secret:
