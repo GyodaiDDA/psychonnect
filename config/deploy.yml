@@ -22,10 +22,10 @@ env:
   clear:
     DATABASE_HOST: psychonnect-postgres
     POSTGRES_USERNAME: psychonnect
-    POSTGRES_DATABASE: psychonnect_production
+    POSTGRES_DB: psychonnect_production
     RAILS_ENV: production
-    SWAGGER_HOST: 167.99.9.143
-    SWAGGER_SCHEME: https
+    #SWAGGER_HOST: 167.99.9.143
+    #SWAGGER_SCHEME: http
   secret:
     - RAILS_MASTER_KEY
     - POSTGRES_PASSWORD
@@ -39,8 +39,8 @@ accessories:
       - data:/var/lib/postgresql/data
     env:
       clear:
-        DATABASE_HOST: psychonnect-postgres
-        POSTGRES_USER: psychonnect
-        POSTGRES_DATABASE: psychonnect_production
+        # DATABASE_HOST: psychonnect-postgres
+        POSTGRES_USERNAME: psychonnect
+        POSTGRES_DB: psychonnect_production
       secret:
         - POSTGRES_PASSWORD
