@@ -32,7 +32,7 @@ env:
     - POSTGRES_PASSWORD
     
 accessories:
-  psychonnect-postgres:
+  postgres:
     image: postgres:15
     host: do-droplet-1
     port: 16
