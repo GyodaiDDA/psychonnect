@@ -41,7 +41,7 @@ accessories:
     env:
       clear:
         DATABASE_HOST: psychonnect-postgres
-        POSTGRES_USERNAME: psychonnect
+        POSTGRES_USER: psychonnect
         POSTGRES_USERNAME: psychonnect
         POSTGRES_DB: psychonnect_production
       secret:
