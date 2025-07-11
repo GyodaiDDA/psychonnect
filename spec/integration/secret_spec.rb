@@ -3,7 +3,7 @@ require 'swagger_helper'
 RSpec.describe 'API secret', type: :request do
   path '/secret' do
     get 'protected endpoint' do
-      tags 'Auth'
+      tags ''
       security [bearerAuth: []]
       produces 'application/json'
 

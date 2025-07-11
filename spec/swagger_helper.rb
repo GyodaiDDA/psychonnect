@@ -37,10 +37,10 @@ RSpec.configure do |config|
         url: "{scheme}://{defaultHost}",
         variables: {
           scheme: {
-            default: ENV.fetch('SWAGGER_SCHEME')
+            default: 'http'
           },
           defaultHost: {
-            default: ENV.fetch('SWAGGER_HOST')
+            default: 'localhost:3000'
           }
         }
       }

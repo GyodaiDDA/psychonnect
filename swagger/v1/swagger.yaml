@@ -189,7 +189,7 @@ paths:
     get:
       summary: Consults current treatment
       tags:
-      - Prescriptions
+      - Treatment
       security:
       - bearerAuth: []
       parameters:
@@ -254,7 +254,7 @@ paths:
     get:
       summary: Consults treatment history
       tags:
-      - Prescriptions
+      - Treatment
       security:
       - bearerAuth: []
       parameters:
@@ -337,7 +337,7 @@ paths:
     get:
       summary: protected endpoint
       tags:
-      - Auth
+      - ''
       security:
       - bearerAuth: []
       responses:

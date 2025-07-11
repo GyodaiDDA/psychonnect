@@ -17,7 +17,7 @@ RSpec.describe 'API Prescription Lists', type: :request do
 
   path '/prescriptions' do
     get 'Consults current treatment' do
-      tags 'Prescriptions'
+      tags 'Treatment'
       security [bearerAuth: []]
       produces 'application/json'
       parameter name: :patient_id, in: :query, type: :integer, required: true
@@ -42,7 +42,7 @@ RSpec.describe 'API Prescription Lists', type: :request do
 
   path '/prescriptions/history/{patient_id}' do
     get 'Consults treatment history' do
-      tags 'Prescriptions'
+      tags 'Treatment'
       security [bearerAuth: []]
       produces 'application/json'
       parameter name: :patient_id, in: :path, type: :integer, required: true
