@@ -1,7 +1,6 @@
 # Prescriptions CRUD
 class PrescriptionsController < ApplicationController
-  before_action :authorize!
-  before_action :authorize_admin!, only: %i[destroy]
+  before_action :authorize_user!
 
   def index
     patient = User.find_by(id: params[:patient_id]) if params[:patient_id]
@@ -37,25 +36,6 @@ class PrescriptionsController < ApplicationController
   def create
     prescription = PrescriptionProcessor.call(prescription_params, current_user)
     render json: { message: prescription[:message] }, status: prescription[:status]
-  end
-
-  def update
-    prescription = Prescription.find(params[:id])
-    return render_api_error(:not_found, status: :not_found, item: :prescription) unless prescription
-
-    if prescription.update(prescription_params)
-      render json: prescription
-    else
-      render_api_error(:invalid_parameters, errors: prescription.errors.full_messages, status: :unprocessable_entity)
-    end
-  end
-
-  def destroy
-    prescription = Prescription.find(params[:id])
-    return render_api_error(:not_found, status: :not_found, item: :prescription) unless prescription
-
-    prescription.destroy
-    head :no_content
   end
 
   private

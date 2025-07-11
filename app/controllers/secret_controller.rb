@@ -1,6 +1,6 @@
 # app/controllers/secret_controller.rb
 class SecretController < ApplicationController
-  before_action :authorize!
+  before_action :authorize_user!
 
   def index
     render json: {

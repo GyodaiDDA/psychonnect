@@ -3,7 +3,6 @@ require 'swagger_helper'
 RSpec.describe 'API Admin', type: :request do
   path '/admin/users/{id}' do
     parameter name: :id, in: :path, type: :string, required: true
-
     parameter name: :user_payload, in: :body, schema: {
       type: :object,
       properties: {

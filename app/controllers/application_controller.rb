@@ -16,7 +16,7 @@ class ApplicationController < ActionController::API
     end
   end
 
-  def authorize!
+  def authorize_user!
     return if current_user
 
     render_api_error(:unauthorized, status: :unauthorized)

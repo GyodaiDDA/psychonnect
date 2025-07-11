@@ -12,6 +12,98 @@ components:
 security:
 - bearerAuth: []
 paths:
+  "/admin/medications/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: medication
+      in: body
+      schema:
+        type: object
+        properties:
+          substance:
+            type: string
+          dosage:
+            type: number
+          measure:
+            type: string
+        required:
+        - substance
+        - dosage
+        - measure
+    delete:
+      summary: Deletes a medication
+      tags:
+      - Admin
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: medication successfully deleted
+        '404':
+          description: medication not found
+        '403':
+          description: not authorized
+  "/admin/prescriptions/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: prescription
+      in: body
+      schema:
+        type: object
+        properties:
+          patient_id:
+            type: integer
+          physician_id:
+            type: integer
+          current_user_id:
+            type: integer
+          medication_id:
+            type: integer
+          quantity:
+            type: number
+          time:
+            type: string
+        required:
+        - patient_id
+        - physician_id
+        - current_user_id
+        - medication_id
+        - quantity
+        - time
+    put:
+      summary: Updates a prescription
+      tags:
+      - Admin
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: prescription updated
+        '404':
+          description: prescription not found
+        '422':
+          description: invalid medication
+    delete:
+      summary: Deletes a prescription
+      tags:
+      - Admin
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: prescription deleted by admin
+        '404':
+          description: prescription not found
+        '403':
+          description: unauthorized
   "/admin/users/{id}":
     parameters:
     - name: id
@@ -150,41 +242,6 @@ paths:
           description: Medication found
         '404':
           description: Medication not found
-    put:
-      summary: Updates medication
-      tags:
-      - Medication
-      security: []
-      parameters: []
-      responses:
-        '200':
-          description: Medication successfully updated
-        '404':
-          description: Medication not found
-        '422':
-          description: Item already in the database
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                substance:
-                  type: string
-                dosage:
-                  type: number
-                measure:
-                  type: string
-    delete:
-      summary: Deletes medication
-      tags:
-      - Medication
-      security: []
-      responses:
-        '204':
-          description: Medication successfully deleted
-        '404':
-          description: Medication not found
   "/prescriptions":
     get:
       summary: Consults current treatment
@@ -250,7 +307,35 @@ paths:
               - medication_id
               - quantity
               - time
-  "/prescriptions/history/{patient_id}":
+  "/treatment/current/{patient_id}":
+    get:
+      summary: Consults treatment history
+      tags:
+      - Treatment
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: patient_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: medication_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: time
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: time treatment history
+        '404':
+          description: patient not found
+  "/treatment/history/{patient_id}":
     get:
       summary: Consults treatment history
       tags:
@@ -296,43 +381,6 @@ paths:
           description: prescription found
         '404':
           description: prescription not found
-    put:
-      summary: Updates a prescription
-      tags:
-      - Prescriptions
-      security:
-      - bearerAuth: []
-      parameters: []
-      responses:
-        '200':
-          description: prescription updated
-        '404':
-          description: prescription not found
-        '422':
-          description: invalid medication
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                quantity:
-                  type: number
-                time:
-                  type: string
-    delete:
-      summary: Deletes a prescription
-      tags:
-      - Prescriptions
-      security:
-      - bearerAuth: []
-      responses:
-        '204':
-          description: prescription deleted by admin
-        '404':
-          description: prescription not found
-        '403':
-          description: unauthorized
   "/secret":
     get:
       summary: protected endpoint

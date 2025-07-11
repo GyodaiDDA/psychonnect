@@ -1,5 +1,5 @@
-# Process a create prescription request checking all
-# its connections and validations and handling errors
+# Process a 'create prescription' request checking all
+# its connections, validations and handling errors
 class PrescriptionProcessor
   def self.call(params, current_user)
     new(params, current_user).process

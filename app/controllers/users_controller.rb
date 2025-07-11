@@ -1,6 +1,6 @@
 # Users methods for regular level users
 class UsersController < ApplicationController
-  before_action :authorize!, only: %i[show update]
+  before_action :authorize_user!, only: %i[show update]
 
   def index
     User.where(id: connected_users.presence)

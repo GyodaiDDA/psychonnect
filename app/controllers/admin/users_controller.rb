@@ -1,7 +1,7 @@
 module Admin
   # Has user management methods for admin-level users
   class UsersController < ApplicationController
-    before_action :authorize!
+    before_action :authorize_user!
     before_action :authorize_admin!
 
     def index

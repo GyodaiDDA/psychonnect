@@ -40,7 +40,46 @@ RSpec.describe 'API Prescription Lists', type: :request do
     end
   end
 
-  path '/prescriptions/history/{patient_id}' do
+  path '/treatment/current/{patient_id}' do
+    get 'Consults treatment history' do
+      tags 'Treatment'
+      security [bearerAuth: []]
+      produces 'application/json'
+      parameter name: :patient_id, in: :path, type: :integer, required: true
+      parameter name: :medication_id, in: :query, type: :integer, required: false
+      parameter name: :time, in: :query, type: :string, required: false
+
+      response '200', 'complete treatment history' do
+        let(:patient_id) { patient.id }
+        run_test!
+      end
+
+      response '200', 'medication treatment history' do
+        let(:patient_id) { patient.id }
+        let(:medication_id) { medication1.id }
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data.all? { |p| p['medication_id'] == medication1.id }).to be true
+        end
+      end
+
+      response '200', 'time treatment history' do
+        let(:patient_id) { patient.id }
+        let(:time) { '10:00' }
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data.all? { |p| p['time'] == '10:00' }).to be true
+        end
+      end
+
+      response '404', 'patient not found' do
+        let(:patient_id) { 9999 }
+        run_test!
+      end
+    end
+  end
+
+  path '/treatment/history/{patient_id}' do
     get 'Consults treatment history' do
       tags 'Treatment'
       security [bearerAuth: []]
